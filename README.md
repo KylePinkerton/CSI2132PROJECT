@@ -5,5 +5,12 @@ Our attempt at cloning AirBnB for our CSI2132 Winter 2020 Project.
 ## ER Diagram
 <img src="./docs/ERDiagram.png"/>
 
+## Using dbconnection, queries:
+connection = new_connection(schema="lab")
+query = new_query(connection)
+query.example()
+rows = query.fetch_all()
+print(rows)
+
 
 

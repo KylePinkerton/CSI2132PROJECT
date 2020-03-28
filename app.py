@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import sys
 sys.path.insert(1, './db')
 from dbconnection import new_connection
@@ -8,12 +8,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-  connection = new_connection(schema="lab")
-  query = new_query(connection)
-  query.example()
-  rows = query.fetch_all()
-  print(rows)
-  return str(rows[0])
+  return render_template("homepage.html")
+
+@app.route('/post_user', methods=['POST'])
+def post_user():
+  return "post user"
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
