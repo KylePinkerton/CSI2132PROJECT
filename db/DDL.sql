@@ -586,5 +586,24 @@ ALTER TABLE project.works_at
 
 ------------------------------------------------
 
+-- Table: project.admins
 
+-- DROP TABLE project.admins;
 
+CREATE TABLE project.admins
+(
+    id character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT admins_id_fkey FOREIGN KEY (id)
+        REFERENCES project.person (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.admins
+    OWNER to kpink074;
+
+------------------------------------------------

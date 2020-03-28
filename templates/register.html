@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<form method="POST" action="/account_creation">
+  <label>First Name:</label>
+  <input id="first_name" name="first_name" type="text"/>
+  <label>>Middle Name:</label>
+  <input id="middle_name" name = "middle_name" type = "text"/>
+  <label>>Last Name:</label>
+  <input id="last_name" name = "last_name" type = "text"/>
+  <label>Username:</label>
+  <input id="username" name="username" type="text"/>
+  <label>> Password:</label>
+  <input id="password" name = "password" type = "password"/>
+  <label>>Street Number:</label>
+  <input id="street_number" name = "street_number" type = "text"/>
+  <label>Street Name:</label>
+  <input id="street_name" name="street_name" type="text"/>
+  <label>> Apartment Number:</label>
+  <input id="apt_number" name = "apt_number" type = "text"/>
+  <label>>Postal Code:</label>
+  <input id="postal_code" name = "postal_code" type = "text"/>
+  <label>Date of Birth:</label>
+  <input id="date_of_birth" name="date_of_birth" type="date"/>
+  <div style='text-align:center;'>
+    <script type= "text/javascript" src = "../static/js/countries.js"></script>
+    Select Country (with provinces):   <select id="country" name ="country"></select> </br></br>
+    Select State: <select name ="province" id ="province"></select>  </br> </br> <hr/>
+  </div>
+  <script language="javascript">
+    populateCountries("country", "province"); // first parameter is id of country drop-down and second parameter is id of state drop-down
+  </script>
+  <div style='text-align:center;'>
+    <input type="submit" />
+  </div>
+</form>
+{% endblock content %}

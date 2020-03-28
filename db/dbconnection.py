@@ -1,5 +1,4 @@
 import psycopg2
-import os
 
 class DBConnection:
   def __init__(self, dbname, user, password, host, port, schema):
@@ -7,7 +6,10 @@ class DBConnection:
     self.cursor = self.connnection.cursor()
     self.schema = schema
     self.cursor.execute(f"SET search_path = {schema}")
+  
+  def close(self):
+    self.connnection.close()
 
-def new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project"):
+def new_connection(dbname, user, password, host, port, schema):
   connection = DBConnection(dbname, user, password, host, port, schema)
   return connection

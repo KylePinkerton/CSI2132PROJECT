@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+  <form method="POST" action="/log_in_attempt">
+    <label>Username:</label>
+    <input id="username" name="username" type="text"/>
+    <label>> Password:</label>
+    <input id="password" name = "password" type = "password"/>
+    <input type="submit" value = "Log In"/>
+  </form>
+
+  <form method="POST" action="/register">
+    <input type="submit" value="Register"/>
+  </form>
+  {% if is_valid == False %}
+        <text>{{error}}</text>
+    {% endif %}
+{% endblock content %}
