@@ -46,7 +46,6 @@ def log_in():
     db.get_password_from_username(username)
     check_password = db.fetch_one()
     if request.form.get('password') == check_password[0]:
-      print('ye')
       user.id = username
       login_user(user)
       flash('You have been logged in!', 'success')
@@ -69,26 +68,30 @@ def unauthorized_handler():
 def register():
   if current_user.is_authenticated:
     return redirect(url_for('index'))
-  account_details = {'first_name' : 'null', 'middle_name' : 'null', 'last_name' : 'null', 'user_name' : 'null', 'password' : 'null', 
-                    'street_number' : 'null', 'street_name' : 'null', 'apt_number' : 'null', 'postal_code' : 'null', 'date_of_birth' : 'null',
-                    'country' : 'null', 'province' : 'null'}
+  account_details = {'first_name' : 'NULL', 'middle_name' : 'NULL', 'last_name' : 'NULL', 'user_name' : 'NULL', 'password' : 'NULL', 
+                    'street_number' : 'NULL', 'street_name' : 'NULL', 'apt_number' : 'NULL', 'postal_code' : 'NULL', 'date_of_birth' : 'NULL',
+                    'country' : 'NULL', 'province' : 'NULL'}
 
   form = RegistrationForm()
-  print(form.validate_on_submit())
   try:
     if form.validate_on_submit():
       account_details['first_name'] = request.form.get('first_name')
-      account_details['middle_name'] = request.form.get('middle_name')
+      account_details['middle_name'] = request.form.get('middle_name', default='NULL')
       account_details['last_name'] = request.form.get('last_name')
       account_details['username'] = request.form.get('username')
       account_details['password'] = request.form.get('password')
       account_details['street_number'] = request.form.get('street_number')
       account_details['street_name'] = request.form.get('street_name')
-      account_details['apt_number'] = request.form.get('apt_number')
+      account_details['apt_number'] = request.form.get('apt_number', default='NaN')
       account_details['postal_code'] = request.form.get('postal_code')
       account_details['date_of_birth'] = request.form.get('date_of_birth')
       account_details['country'] = request.form.get('country')
       account_details['province'] = request.form.get('province')
+      #deal with weird cases for optional (can be null) arguments
+      if account_details['middle_name'] == "":
+        account_details['middle_name'] = "NULL"
+      if account_details['apt_number'] == "":
+        account_details['apt_number'] = "NaN"
       db.create_user(account_details['first_name'], account_details['middle_name'], account_details['last_name'], account_details['username'], account_details['password'], account_details['street_number'], account_details['street_name'], account_details['apt_number'], account_details['postal_code'], account_details['date_of_birth'], account_details['country'], account_details['province'])
       flash(f'Account created for {form.username.data}!', 'success')
       db.commit()
@@ -99,11 +102,10 @@ def register():
     return render_template('register.html', title='Register', form=form)
   return render_template('register.html', title='Register', form=form)
 
-
-@app.route('/account_creation', methods=['POST'])
-def account_creation():
-  pass
-
+@app.route("/account")
+@login_required
+def account():
+  return render_template('account.html', title='Account')
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
