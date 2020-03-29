@@ -24,25 +24,6 @@ def user_loader(username):
     return user
   return
 
-@login_manager.request_loader
-def request_loader(request):
-  username = request.form.get('username')
-  db.valid_username(username)
-  username_count = db.fetch_one()
-  user = User()
-  if not username_count[0]:
-    return
-  
-  user = User()
-  user.id = username
-
-  db.get_password_from_username(username)
-  password = db.fetch_one()[0]
-
-  user.is_authenticated = request.form['password'] == password
-
-  return user
-
 @app.route('/')
 def index():
   return render_template("homepage.html")
@@ -52,7 +33,6 @@ def log_in():
   if current_user.is_authenticated:
     return redirect(url_for('index'))
   form = LoginForm()
-  print(form.validate_on_submit())
   if form.validate_on_submit():
     username = request.form.get('username')
     password = request.form.get('password')
@@ -61,14 +41,18 @@ def log_in():
     user = User()
     if not username_count[0]:
       flash('Login Unsuccessful. Username does not exist.', 'danger')
-      return render_template('log_in.html', title='Login', form=form)
+      return render_template('log_in.html', title='Login', form=form) 
 
-    else:
+    db.get_password_from_username(username)
+    check_password = db.fetch_one()
+    if request.form.get('password') == check_password[0]:
+      print('ye')
+      user.id = username
+      login_user(user)
+      flash('You have been logged in!', 'success')
+      return redirect(url_for('index'))
+    else: 
       flash('Login Unsuccessful. Please check username and password', 'danger')
-
-    login_user(user)
-    flash('You have been logged in!', 'success')
-    return redirect(url_for('index'))
   return render_template('log_in.html', title='Login', form=form)
 
 @app.route("/logout")
