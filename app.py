@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.debug = True
 app.config['SECRET_KEY'] = 'f7db6a2ebd1d01417597c005cb404b63'
 login_manager = LoginManager(app)
+login_manager.login_view = 'log_in'
+login_manager.login_message_category = 'info'
 
 class User(UserMixin):
   pass
@@ -49,7 +51,8 @@ def log_in():
       user.id = username
       login_user(user)
       flash('You have been logged in!', 'success')
-      return redirect(url_for('index'))
+      next_page = request.args.get('next')
+      return redirect(next_page) if next_page else redirect(url_for('index'))
     else: 
       flash('Login Unsuccessful. Please check username and password', 'danger')
   return render_template('log_in.html', title='Login', form=form)
@@ -59,10 +62,6 @@ def log_in():
 def logout():
   logout_user()
   return redirect(url_for('index'))
-
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-  return 'Unauthorized'
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
