@@ -1,71 +1,49 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, flash, redirect
 import sys
 sys.path.insert(1, './db')
 from db import new_db_instance
+from forms import RegistrationForm, LoginForm
 
 db = new_db_instance()
 app = Flask(__name__)
 app.debug = True
+app.config['SECRET_KEY'] = 'f7db6a2ebd1d01417597c005cb404b63'
 
 @app.route('/')
 def index():
   return render_template("homepage.html")
 
-@app.route('/log_in', methods=['GET'])
+@app.route('/log_in', methods=['GET', 'POST'])
 def log_in():
-  return render_template("log_in.html")
-
-@app.route('/log_in_attempt', methods=['POST'])
-def log_in_attempt():
-  username = request.form['username']
-  password = request.form['password']
-  is_valid = db.valid_account(username, password)
-  if is_valid[0] == False:
-    return render_template("log_in.html", is_valid=is_valid[0], error = is_valid[1])
-
-  return render_template("success.html", is_valid=is_valid[0], error=is_valid[1])
+  form = LoginForm()
+  if form.validate_on_submit():
+      if form.username.data == 'admin' and form.password.data == 'admin':
+          flash('You have been logged in!', 'success')
+          return redirect(url_for('index'))
+      else:
+          flash('Login Unsuccessful. Please check username and password', 'danger')
+  return render_template('log_in.html', title='Login', form=form)
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
-  return render_template("register.html")
+  form = RegistrationForm()
+  try:
+    if form.validate_on_submit():
+      country = request.form['country']
+      province = request.form['province']
+      flash(f'Account created for {form.username.data}!', 'success')
+      return redirect(url_for('index'))
+
+  except Exception as e:
+    print(e)
+    flash('Please enter your country/province', 'danger')
+    return render_template('register.html', title='Register', form=form)
+  return render_template('register.html', title='Register', form=form)
+
 
 @app.route('/account_creation', methods=['POST'])
 def account_creation():
-  account_details = {'first_name' : 'null', 'middle_name' : 'null', 'last_name' : 'null', 'user_name' : 'null', 'password' : 'null', 
-                    'street_number' : 'null', 'street_name' : 'null', 'apt_number' : 'null', 'postal_code' : 'null', 'date_of_birth' : 'null',
-                    'country' : 'null', 'province' : 'null'}
-
-  #inputs that can't be "null"
-  required_inputs = ['first_name', 'last_name', 'username', 'password', 'country', 'street_number', 'street_name', 
-                    'province', 'postal_code', 'date_of_birth']
-  try:
-    account_details['first_name'] = request.form['first_name']
-    account_details['middle_name'] = request.form['middle_name']
-    account_details['last_name'] = request.form['last_name']
-    account_details['username'] = request.form['username']
-    account_details['password'] = request.form['password']
-    account_details['street_number'] = request.form['street_number']
-    account_details['street_name'] = request.form['street_name']
-    account_details['apt_number'] = request.form['apt_number']
-    account_details['postal_code'] = request.form['postal_code']
-    account_details['date_of_birth'] = request.form['date_of_birth']
-    account_details['country'] = request.form['country']
-    account_details['province'] = request.form['province']
-  
-  except KeyError as e:
-    return "Please enter your country/province"
-
-  error_string = ''
-  for required_input in required_inputs:
-    if account_details[required_input] == 'null':
-      error_string += required_input + ", "
-  
-  if len(error_string) > 0:
-    error_string += "cannot be empty!"
-    return error_string
-  
-  else:
-    success = db.create_user(account_details)
+  pass
     
 
 @app.route('/shutdown', methods=['GET'])
