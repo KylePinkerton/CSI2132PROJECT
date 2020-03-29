@@ -97,6 +97,19 @@
             {% endif %}
           </div>
           <div class="form-group">
+            {{ form.street_name.label(class="form-control-label") }}
+            {% if form.street_name.errors %}
+                {{ form.street_name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.street_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.street_name(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
             {{ form.apt_number.label(class="form-control-label") }}
             {% if form.apt_number.errors %}
                 {{ form.apt_number(class="form-control form-control-lg is-invalid") }}

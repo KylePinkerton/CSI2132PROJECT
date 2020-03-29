@@ -1,4 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>HOMEPAGE GAMEPLAY</h1>
+  <h1>HOMEPAGE GAMEPLAY</h1>
+  {% if current_user.is_authenticated %}
+    Hi {{ current_user.id }}!
+  {% endif %}
 {% endblock content %}
