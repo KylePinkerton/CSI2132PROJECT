@@ -56,6 +56,9 @@ class DB:
   
   def insert_phone_number(self, username, phone_number):
     self.cursor.execute(f"insert into person_phone_number (username, phone_number) VALUES ('{username}', '{phone_number}')")
+  
+  def update_phone_number(self, username, phone_number):
+    self.cursor.execute(f"UPDATE person_phone_number SET phone_number = '{phone_number}' WHERE username = '{username}'")
 
   def update_picture(self, username, picture):
     self.cursor.execute(f"update users set profile_picture = '{picture}' WHERE username='{username}'")

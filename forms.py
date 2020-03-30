@@ -34,16 +34,19 @@ class RegistrationForm(FlaskForm):
     if username_count[0]:
       raise ValidationError("That username is taken. Please choose another username.")
   
-  def validate_phone(form, field):
-    if len(field.data) > 16:
+  def validate_phone_number(form, phone_number):
+    if len(phone_number.data) > 16:
       raise ValidationError('Invalid phone number.')
     try:
-      input_number = phonenumbers.parse(field.data)
+      input_number = phonenumbers.parse(phone_number.data)
       if not (phonenumbers.is_valid_number(input_number)):
         raise ValidationError('Invalid phone number.')
-    except:
-      input_number = phonenumbers.parse("+1"+field.data)
-      if not (phonenumbers.is_valid_number(input_number)):
+    except Exception as e:
+      try:
+        input_number = phonenumbers.parse("+1"+phone_number.data)
+        if not (phonenumbers.is_valid_number(input_number)):
+          raise ValidationError('Invalid phone number.')
+      except Exception as e:
         raise ValidationError('Invalid phone number.')
 
 class LoginForm(FlaskForm):
@@ -54,3 +57,22 @@ class LoginForm(FlaskForm):
 class AccountPicture(FlaskForm):
   picture = FileField('Update Profile Picture', validators=[DataRequired(), FileAllowed(['jpg', 'png'])])
   submit = SubmitField('Update')
+
+class ChangeNumber(FlaskForm):
+  phone_number = StringField('Phone', validators=[DataRequired()])
+  submit = SubmitField('Update')
+
+  def validate_phone_number(form, phone_number):
+    if len(phone_number.data) > 16:
+      raise ValidationError('Invalid phone number.')
+    try:
+      input_number = phonenumbers.parse(phone_number.data)
+      if not (phonenumbers.is_valid_number(input_number)):
+        raise ValidationError('Invalid phone number.')
+    except Exception as e:
+      try:
+        input_number = phonenumbers.parse("+1"+phone_number.data)
+        if not (phonenumbers.is_valid_number(input_number)):
+          raise ValidationError('Invalid phone number.')
+      except Exception as e:
+        raise ValidationError('Invalid phone number.')

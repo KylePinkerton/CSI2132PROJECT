@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
@@ -54,7 +54,7 @@ def user_loader(username):
     db.select_from_person_email(username)
     user.email = db.fetch_all()
     db.select_from_person_phone(username)
-    phone_number = db.fetch_all()
+    user.phone_number = db.fetch_all()
     user.image_file = picture
     return user
   return
@@ -161,6 +161,19 @@ def account():
     flash('Your account has been updated', 'success')
   image_file = url_for('static', filename='images/' + current_user.image_file)
   return render_template('account.html', title='Account', form=form, image_file=image_file)
+
+@app.route("/changenumber", methods=["GET", "POST"])
+@login_required
+def account_change_number():
+  form = ChangeNumber()
+  if form.validate_on_submit():
+    phone_number = request.form.get('phone_number')
+    print(phone_number)
+    db.update_phone_number(current_user.id, phone_number)
+    db.commit()
+    flash('Your Phone number has been updated', 'success')
+    return redirect(url_for('account'))
+  return render_template('account_change_number.html', form=form)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
