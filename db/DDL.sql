@@ -3,6 +3,65 @@
 
 ------------------------------------------------
 
+-- Table: project.person
+
+-- DROP TABLE project.person;
+
+CREATE TABLE project.person
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    first_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    middle_name character varying(20) COLLATE pg_catalog."default",
+    last_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    street_number numeric(5,0) NOT NULL,
+    street_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    apt_number numeric(5,0),
+    province character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    postal_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    date_of_birth date NOT NULL,
+    CONSTRAINT person_pkey PRIMARY KEY (username)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.person
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.users
+
+-- DROP TABLE project.users;
+
+CREATE TABLE project.users
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    join_date date NOT NULL,
+    verified boolean NOT NULL,
+    about text COLLATE pg_catalog."default",
+    languages text COLLATE pg_catalog."default",
+    work text COLLATE pg_catalog."default",
+    profile_picture character varying(20),
+    CONSTRAINT users_pkey PRIMARY KEY (username),
+    CONSTRAINT users_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.users
+    OWNER to kpink074;
+
+------------------------------------------------
+
 -- Table: project.branches
 
 -- DROP TABLE project.branches;
@@ -27,281 +86,13 @@ ALTER TABLE project.branches
 
 ------------------------------------------------
 
--- Table: project.conversation
-
--- DROP TABLE project.conversation;
-
-CREATE TABLE project.conversation
-(
-    senderid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    receiverid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT conversation_pkey PRIMARY KEY (senderid, receiverid),
-    CONSTRAINT conversation_receiverid_fkey FOREIGN KEY (receiverid)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT conversation_senderid_fkey FOREIGN KEY (senderid)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.conversation
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.conversation_messages
-
--- DROP TABLE project.conversation_messages;
-
-CREATE TABLE project.conversation_messages
-(
-    senderid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    receiverid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    "time" timestamp without time zone NOT NULL,
-    message_content text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT conversation_messages_pkey PRIMARY KEY (senderid, receiverid, "time"),
-    CONSTRAINT conversation_messages_senderid_fkey FOREIGN KEY (receiverid, senderid)
-        REFERENCES project.conversation (receiverid, senderid) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.conversation_messages
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.employees
-
--- DROP TABLE project.employees;
-
-CREATE TABLE project.employees
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    title text COLLATE pg_catalog."default" NOT NULL,
-    salary numeric(8,2),
-    country character varying(20) COLLATE pg_catalog."default",
-    managerid character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT employees_pkey PRIMARY KEY (id),
-    CONSTRAINT employees_country_fkey FOREIGN KEY (country)
-        REFERENCES project.branches (country) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT employees_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT employees_managerid_fkey FOREIGN KEY (managerid)
-        REFERENCES project.employees (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
-    CONSTRAINT employees_salary_check CHECK (salary > 0::numeric)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.employees
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.payment
-
--- DROP TABLE project.payment;
-
-CREATE TABLE project.payment
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    is_deposit boolean NOT NULL,
-    amount numeric(8,2),
-    status character varying(20) COLLATE pg_catalog."default",
-    rentalid character varying(20) COLLATE pg_catalog."default",
-    guestid character varying(20) COLLATE pg_catalog."default",
-    hostid character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT payment_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_guestid_fkey FOREIGN KEY (guestid)
-        REFERENCES project.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
-    CONSTRAINT payment_hostid_fkey FOREIGN KEY (hostid)
-        REFERENCES project.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
-    CONSTRAINT payment_rentalid_fkey FOREIGN KEY (rentalid)
-        REFERENCES project.rental_agreement (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
-    CONSTRAINT payment_amount_check CHECK (amount > 0::numeric),
-    CONSTRAINT payment_status_check CHECK (status::text = 'approved'::text OR status::text = 'pending'::text)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.payment
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.payment_method
-
--- DROP TABLE project.payment_method;
-
-CREATE TABLE project.payment_method
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    card_type character varying(20) COLLATE pg_catalog."default",
-    first_name character varying(20) COLLATE pg_catalog."default",
-    last_name character varying(20) COLLATE pg_catalog."default",
-    card_number character varying(20) COLLATE pg_catalog."default",
-    card_expiration date,
-    cvv character varying(3) COLLATE pg_catalog."default",
-    billing_country character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT payment_method_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_method_id_fkey FOREIGN KEY (id)
-        REFERENCES project.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.payment_method
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.payout_method
-
--- DROP TABLE project.payout_method;
-
-CREATE TABLE project.payout_method
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    paypal_address character varying(20) COLLATE pg_catalog."default",
-    account_type character varying(20) COLLATE pg_catalog."default",
-    account_holder_name character varying(20) COLLATE pg_catalog."default",
-    bank_name character varying(20) COLLATE pg_catalog."default",
-    account_number character varying(20) COLLATE pg_catalog."default",
-    transit_number character varying(20) COLLATE pg_catalog."default",
-    insitution_number character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT payout_method_pkey PRIMARY KEY (id),
-    CONSTRAINT payout_method_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.payout_method
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.person
-
--- DROP TABLE project.person;
-
-CREATE TABLE project.person
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    first_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    middle_name character varying(20) COLLATE pg_catalog."default",
-    last_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    password character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    street_number numeric(5,0) NOT NULL,
-    street_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    apt_number numeric(5,0),
-    province character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    postal_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    date_of_birth date NOT NULL,
-    CONSTRAINT person_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.person
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.person_email_address
-
--- DROP TABLE project.person_email_address;
-
-CREATE TABLE project.person_email_address
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    email_address character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT person_email_address_pkey PRIMARY KEY (id, email_address),
-    CONSTRAINT person_email_address_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.person_email_address
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.person_phone_number
-
--- DROP TABLE project.person_phone_number;
-
-CREATE TABLE project.person_phone_number
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    phone_number character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT person_phone_number_pkey PRIMARY KEY (id, phone_number),
-    CONSTRAINT person_phone_number_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.person_phone_number
-    OWNER to kpink074;
-
-------------------------------------------------
-
 -- Table: project.property
 
 -- DROP TABLE project.property;
 
 CREATE TABLE project.property
 (
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
     street_number numeric(5,0) NOT NULL,
     street_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
     apt_number numeric(5,0),
@@ -315,14 +106,14 @@ CREATE TABLE project.property
     accesible boolean NOT NULL,
     pets_allowed boolean NOT NULL,
     country character varying(20) COLLATE pg_catalog."default",
-    hostid character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT property_pkey PRIMARY KEY (id),
+    hostusername character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT property_pkey PRIMARY KEY (propertyname),
     CONSTRAINT property_country_fkey FOREIGN KEY (country)
         REFERENCES project.branches (country) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT property_hostid_fkey FOREIGN KEY (hostid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    CONSTRAINT property_hostusername_fkey FOREIGN KEY (hostusername)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
     CONSTRAINT property_rent_rate_check CHECK (rent_rate > 0::numeric),
@@ -347,11 +138,11 @@ ALTER TABLE project.property
 
 CREATE TABLE project.property_available_dates
 (
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
     available_date date NOT NULL,
-    CONSTRAINT property_available_dates_pkey PRIMARY KEY (id, available_date),
-    CONSTRAINT property_available_dates_id_fkey FOREIGN KEY (id)
-        REFERENCES project.property (id) MATCH SIMPLE
+    CONSTRAINT property_available_dates_pkey PRIMARY KEY (propertyname, available_date),
+    CONSTRAINT property_available_dates_propertyname_fkey FOREIGN KEY (propertyname)
+        REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 )
@@ -371,15 +162,15 @@ ALTER TABLE project.property_available_dates
 
 CREATE TABLE project.property_review
 (
-    userid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    propertyid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT property_review_pkey PRIMARY KEY (userid, propertyid),
-    CONSTRAINT property_review_propertyid_fkey FOREIGN KEY (propertyid)
-        REFERENCES project.property (id) MATCH SIMPLE
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT property_review_pkey PRIMARY KEY (username, propertyname),
+    CONSTRAINT property_review_propertyname_fkey FOREIGN KEY (propertyname)
+        REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT property_review_userid_fkey FOREIGN KEY (userid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    CONSTRAINT property_review_username_fkey FOREIGN KEY (username)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 )
@@ -399,8 +190,8 @@ ALTER TABLE project.property_review
 
 CREATE TABLE project.property_review_details
 (
-    userid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    propertyid character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
     "time" timestamp without time zone NOT NULL,
     communication numeric(2,1),
     value numeric(2,1),
@@ -409,9 +200,9 @@ CREATE TABLE project.property_review_details
     cleanliness numeric(2,1),
     location numeric(2,1),
     review_content text COLLATE pg_catalog."default",
-    CONSTRAINT property_review_details_pkey PRIMARY KEY (userid, propertyid, "time"),
-    CONSTRAINT property_review_details_userid_fkey FOREIGN KEY (propertyid, userid)
-        REFERENCES project.property_review (propertyid, userid) MATCH SIMPLE
+    CONSTRAINT property_review_details_pkey PRIMARY KEY (username, propertyname, "time"),
+    CONSTRAINT property_review_details_username_fkey FOREIGN KEY (propertyname, username)
+        REFERENCES project.property_review (propertyname, username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
     CONSTRAINT property_review_details_communication_check CHECK (communication >= 0::numeric AND communication <= 5::numeric),
@@ -437,7 +228,7 @@ ALTER TABLE project.property_review_details
 
 CREATE TABLE project.rental_agreement
 (
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    rental_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     start_date date NOT NULL,
     end_date date NOT NULL,
     sign_date date,
@@ -445,20 +236,20 @@ CREATE TABLE project.rental_agreement
     message_to_host text COLLATE pg_catalog."default" NOT NULL,
     total_price numeric(8,2),
     host_accepted boolean NOT NULL,
-    propertyid character varying(20) COLLATE pg_catalog."default",
-    guestid character varying(20) COLLATE pg_catalog."default",
-    hostid character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT rental_agreement_pkey PRIMARY KEY (id),
-    CONSTRAINT rental_agreement_guestid_fkey FOREIGN KEY (guestid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    propertyname character varying(20) COLLATE pg_catalog."default",
+    guestusername character varying(20) COLLATE pg_catalog."default",
+    hostusername character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT rental_agreement_pkey PRIMARY KEY (rental_id),
+    CONSTRAINT rental_agreement_guestusername_fkey FOREIGN KEY (guestusername)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE SET NULL,
-    CONSTRAINT rental_agreement_hostid_fkey FOREIGN KEY (hostid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    CONSTRAINT rental_agreement_hostusername_fkey FOREIGN KEY (hostusername)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE SET NULL,
-    CONSTRAINT rental_agreement_propertyid_fkey FOREIGN KEY (propertyid)
-        REFERENCES project.property (id) MATCH SIMPLE
+    CONSTRAINT rental_agreement_propertyname_fkey FOREIGN KEY (propertyname)
+        REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE SET NULL,
     CONSTRAINT rental_agreement_total_price_check CHECK (total_price > 0::numeric)
@@ -473,24 +264,313 @@ ALTER TABLE project.rental_agreement
 
 ------------------------------------------------
 
+-- Table: project.admins
+
+-- DROP TABLE project.admins;
+
+CREATE TABLE project.admins
+(
+    username character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT admins_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.admins
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.works_at
+
+-- DROP TABLE project.works_at;
+
+CREATE TABLE project.works_at
+(
+    employeeusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    propertyusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT works_at_pkey PRIMARY KEY (employeeusername, propertyusername),
+    CONSTRAINT works_at_employeeusername_fkey FOREIGN KEY (employeeusername)
+        REFERENCES project.employees (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT works_at_propertyusername_fkey FOREIGN KEY (propertyusername)
+        REFERENCES project.property (propertyname) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.works_at
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.employees
+
+-- DROP TABLE project.employees;
+
+CREATE TABLE project.employees
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    title text COLLATE pg_catalog."default" NOT NULL,
+    salary numeric(8,2),
+    country character varying(20) COLLATE pg_catalog."default",
+    managerusername character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT employees_pkey PRIMARY KEY (username),
+    CONSTRAINT employees_country_fkey FOREIGN KEY (country)
+        REFERENCES project.branches (country) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT employees_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT employees_managerusername_fkey FOREIGN KEY (managerusername)
+        REFERENCES project.employees (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT employees_salary_check CHECK (salary > 0::numeric)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.employees
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.conversation
+
+-- DROP TABLE project.conversation;
+
+CREATE TABLE project.conversation
+(
+    senderusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    receiverusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT conversation_pkey PRIMARY KEY (senderusername, receiverusername),
+    CONSTRAINT conversation_receiverusername_fkey FOREIGN KEY (receiverusername)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT conversation_senderusername_fkey FOREIGN KEY (senderusername)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.conversation
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.conversation_messages
+
+-- DROP TABLE project.conversation_messages;
+
+CREATE TABLE project.conversation_messages
+(
+    senderusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    receiverusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    "time" timestamp without time zone NOT NULL,
+    message_content text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT conversation_messages_pkey PRIMARY KEY (senderusername, receiverusername, "time"),
+    CONSTRAINT conversation_messages_senderusername_fkey FOREIGN KEY (receiverusername, senderusername)
+        REFERENCES project.conversation (receiverusername, senderusername) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.conversation_messages
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.payment
+
+-- DROP TABLE project.payment;
+
+CREATE TABLE project.payment
+(
+    payment_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    is_deposit boolean NOT NULL,
+    amount numeric(8,2),
+    status character varying(20) COLLATE pg_catalog."default",
+    rental_id character varying(20) COLLATE pg_catalog."default",
+    guestusername character varying(20) COLLATE pg_catalog."default",
+    hostusername character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT payment_pkey PRIMARY KEY (payment_id),
+    CONSTRAINT payment_guestusername_fkey FOREIGN KEY (guestusername)
+        REFERENCES project.users (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT payment_hostusername_fkey FOREIGN KEY (hostusername)
+        REFERENCES project.users (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id)
+        REFERENCES project.rental_agreement (rental_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT payment_amount_check CHECK (amount > 0::numeric),
+    CONSTRAINT payment_status_check CHECK (status::text = 'approved'::text OR status::text = 'pending'::text)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.payment
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.payment_method
+
+-- DROP TABLE project.payment_method;
+
+CREATE TABLE project.payment_method
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    card_type character varying(20) COLLATE pg_catalog."default",
+    first_name character varying(20) COLLATE pg_catalog."default",
+    last_name character varying(20) COLLATE pg_catalog."default",
+    card_number character varying(20) COLLATE pg_catalog."default",
+    card_expiration date,
+    cvv character varying(3) COLLATE pg_catalog."default",
+    billing_country character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT payment_method_pkey PRIMARY KEY (username),
+    CONSTRAINT payment_method_username_fkey FOREIGN KEY (username)
+        REFERENCES project.users (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.payment_method
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.payout_method
+
+-- DROP TABLE project.payout_method;
+
+CREATE TABLE project.payout_method
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    paypal_address character varying(20) COLLATE pg_catalog."default",
+    account_type character varying(20) COLLATE pg_catalog."default",
+    account_holder_name character varying(20) COLLATE pg_catalog."default",
+    bank_name character varying(20) COLLATE pg_catalog."default",
+    account_number character varying(20) COLLATE pg_catalog."default",
+    transit_number character varying(20) COLLATE pg_catalog."default",
+    insitution_number character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT payout_method_pkey PRIMARY KEY (username),
+    CONSTRAINT payout_method_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.payout_method
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.person_email_address
+
+-- DROP TABLE project.person_email_address;
+
+CREATE TABLE project.person_email_address
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    email_address character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT person_email_address_pkey PRIMARY KEY (username, email_address),
+    CONSTRAINT person_email_address_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.person_email_address
+    OWNER to kpink074;
+
+------------------------------------------------
+
+
+-- Table: project.person_phone_number
+
+-- DROP TABLE project.person_phone_number;
+
+CREATE TABLE project.person_phone_number
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    phone_number character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT person_phone_number_pkey PRIMARY KEY (username, phone_number),
+    CONSTRAINT person_phone_number_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.person_phone_number
+    OWNER to kpink074;
+
+------------------------------------------------
+
+
 -- Table: project.user_review
 
 -- DROP TABLE project.user_review;
 
 CREATE TABLE project.user_review
 (
-    reviewerid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    revieweeid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT user_review_pkey PRIMARY KEY (reviewerid, revieweeid),
-    CONSTRAINT user_review_revieweeid_fkey FOREIGN KEY (revieweeid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    reviewerusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    revieweeusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT user_review_pkey PRIMARY KEY (reviewerusername, revieweeusername),
+    CONSTRAINT user_review_revieweeusername_fkey FOREIGN KEY (revieweeusername)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT user_review_reviewerid_fkey FOREIGN KEY (reviewerid)
-        REFERENCES project.users (id) MATCH SIMPLE
+    CONSTRAINT user_review_reviewerusername_fkey FOREIGN KEY (reviewerusername)
+        REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT user_review_check CHECK (revieweeid::text <> reviewerid::text)
+    CONSTRAINT user_review_check CHECK (revieweeusername::text <> reviewerusername::text)
 )
 WITH (
     OIDS = FALSE
@@ -508,16 +588,16 @@ ALTER TABLE project.user_review
 
 CREATE TABLE project.user_review_details
 (
-    reviewerid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    revieweeid character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    reviewerusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    revieweeusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
     "time" timestamp without time zone NOT NULL,
     review_content text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT user_review_details_pkey PRIMARY KEY (reviewerid, revieweeid, "time"),
-    CONSTRAINT user_review_details_reviewerid_fkey FOREIGN KEY (revieweeid, reviewerid)
-        REFERENCES project.user_review (revieweeid, reviewerid) MATCH SIMPLE
+    CONSTRAINT user_review_details_pkey PRIMARY KEY (reviewerusername, revieweeusername, "time"),
+    CONSTRAINT user_review_details_reviewerusername_fkey FOREIGN KEY (revieweeusername, reviewerusername)
+        REFERENCES project.user_review (revieweeusername, reviewerusername) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT user_review_details_check CHECK (revieweeid::text <> reviewerid::text)
+    CONSTRAINT user_review_details_check CHECK (revieweeusername::text <> reviewerusername::text)
 )
 WITH (
     OIDS = FALSE
@@ -525,85 +605,6 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE project.user_review_details
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.users
-
--- DROP TABLE project.users;
-
-CREATE TABLE project.users
-(
-    id character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    join_date date NOT NULL,
-    verified boolean NOT NULL,
-    about text COLLATE pg_catalog."default",
-    languages text COLLATE pg_catalog."default",
-    work text COLLATE pg_catalog."default",
-    profile_picture bytea,
-    CONSTRAINT users_pkey PRIMARY KEY (id),
-    CONSTRAINT users_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.users
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.works_at
-
--- DROP TABLE project.works_at;
-
-CREATE TABLE project.works_at
-(
-    employeeid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    propertyid character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT works_at_pkey PRIMARY KEY (employeeid, propertyid),
-    CONSTRAINT works_at_employeeid_fkey FOREIGN KEY (employeeid)
-        REFERENCES project.employees (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT works_at_propertyid_fkey FOREIGN KEY (propertyid)
-        REFERENCES project.property (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.works_at
-    OWNER to kpink074;
-
-------------------------------------------------
-
--- Table: project.admins
-
--- DROP TABLE project.admins;
-
-CREATE TABLE project.admins
-(
-    id character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT admins_id_fkey FOREIGN KEY (id)
-        REFERENCES project.person (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.admins
     OWNER to kpink074;
 
 ------------------------------------------------

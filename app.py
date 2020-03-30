@@ -2,9 +2,11 @@ from flask import Flask, request, render_template, url_for, flash, redirect
 import sys
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, AccountPicture
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
+import secrets
+import os
 
 app = Flask(__name__)
 app.debug = True
@@ -23,6 +25,10 @@ def user_loader(username):
   user = User()
   if username_count[0]:
     user.id = username
+    #do a bunch of initializations?
+    db.get_picture(username)
+    picture = db.fetch_one()[0]
+    user.image_file = picture
     return user
   return
 
@@ -69,7 +75,7 @@ def register():
     return redirect(url_for('index'))
   account_details = {'first_name' : 'NULL', 'middle_name' : 'NULL', 'last_name' : 'NULL', 'user_name' : 'NULL', 'password' : 'NULL', 
                     'street_number' : 'NULL', 'street_name' : 'NULL', 'apt_number' : 'NULL', 'postal_code' : 'NULL', 'date_of_birth' : 'NULL',
-                    'country' : 'NULL', 'province' : 'NULL'}
+                    'country' : 'NULL', 'province' : 'NULL', 'email' : 'NULL', 'phone_number' : 'NULL'}
 
   form = RegistrationForm()
   try:
@@ -86,12 +92,14 @@ def register():
       account_details['date_of_birth'] = request.form.get('date_of_birth')
       account_details['country'] = request.form.get('country')
       account_details['province'] = request.form.get('province')
+      account_details['email'] = request.form.get('email')
+      account_details['phone_number'] = request.form.get('phone_number')
       #deal with weird cases for optional (can be null) arguments
       if account_details['middle_name'] == "":
         account_details['middle_name'] = "NULL"
       if account_details['apt_number'] == "":
         account_details['apt_number'] = "NaN"
-      db.create_user(account_details['first_name'], account_details['middle_name'], account_details['last_name'], account_details['username'], account_details['password'], account_details['street_number'], account_details['street_name'], account_details['apt_number'], account_details['postal_code'], account_details['date_of_birth'], account_details['country'], account_details['province'])
+      db.create_user(account_details['first_name'], account_details['middle_name'], account_details['last_name'], account_details['username'], account_details['password'], account_details['street_number'], account_details['street_name'], account_details['apt_number'], account_details['postal_code'], account_details['date_of_birth'], account_details['country'], account_details['province'], account_details['email'], account_details['phone_number'])
       flash(f'Account created for {form.username.data}!', 'success')
       db.commit()
       return redirect(url_for('index'))
@@ -101,10 +109,26 @@ def register():
     return render_template('register.html', title='Register', form=form)
   return render_template('register.html', title='Register', form=form)
 
-@app.route("/account")
+def save_picture(form_picture):
+  random_name = secrets.token_hex(6)
+  _, f_ext = os.path.splitext(form_picture.filename)
+  picture_fn = random_name + f_ext
+  picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
+  form_picture.save(picture_path)
+  return picture_fn
+
+@app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-  return render_template('account.html', title='Account')
+  form = AccountPicture()
+  if form.validate_on_submit():
+    picture_file = save_picture(form.picture.data)
+    current_user.image_file = picture_file
+    db.update_picture(current_user.id, picture_file)
+    db.commit()
+    flash('Your account has been updated', 'success')
+  image_file = url_for('static', filename='images/' + current_user.image_file)
+  return render_template('account.html', title='Account', form=form, image_file=image_file)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():

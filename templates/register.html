@@ -148,6 +148,32 @@
                 {{ form.date_of_birth(class="form-control form-control-lg") }}
             {% endif %}
           </div>
+          <div class="form-group">
+            {{ form.email.label(class="form-control-label") }}
+            {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.phone_number.label(class="form-control-label") }}
+            {% if form.phone_number.errors %}
+                {{ form.phone_number(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.phone_number.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.phone_number(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
       </fieldset>
       <div style='text-align:center;'>
         <script type= "text/javascript" src = "../static/js/countries.js"></script>
