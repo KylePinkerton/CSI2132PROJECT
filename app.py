@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, url_for, flash, redirect
 import sys
+from PIL import Image
 sys.path.insert(1, './db')
 from db import db
 from forms import RegistrationForm, LoginForm, AccountPicture
@@ -114,7 +115,11 @@ def save_picture(form_picture):
   _, f_ext = os.path.splitext(form_picture.filename)
   picture_fn = random_name + f_ext
   picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
-  form_picture.save(picture_path)
+
+  output_size = (125, 125)
+  image = Image.open(form_picture)
+  image.thumbnail(output_size)
+  image.save(picture_path)
   return picture_fn
 
 @app.route("/account", methods=["GET", "POST"])
