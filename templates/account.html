@@ -38,5 +38,33 @@
         </small>
       </div>
     </div>
+    <div>
+      <ul class="list-group">
+        First Name
+        <li class="list-group-item">{{ current_user.first_name }}</li>
+        Middle Name
+        <li class="list-group-item">{{ current_user.middle_name if current_user.middle_name != "NULL" else "N/A" }}</li>
+        Last Name
+        <li class="list-group-item">{{ current_user.last_name }}</li>
+        Username
+        <li class="list-group-item">{{ current_user.id }}</li>
+        Password
+        <li class="list-group-item">{{ current_user.password }}</li>
+        Street Number
+        <li class="list-group-item">{{ current_user.street_number }}</li>
+        Street Name
+        <li class="list-group-item">{{ current_user.street_name }}</li>
+        Apartment Number
+        <li class="list-group-item">{{ current_user.apartment_number if current_user.apartment_number != NaN else "N/A" }}</li>
+        Postal Code
+        <li class="list-group-item">{{ current_user.postal_code }}</li>
+        Date of Birth
+        <li class="list-group-item">{{ current_user.date_of_birth }}</li>
+        Country
+        <li class="list-group-item">{{ current_user.country }}</li>
+        Province/State
+        <li class="list-group-item">{{ current_user.province }}</li>
+      </ul>
+    </div>
   </div>
 {% endblock content %}

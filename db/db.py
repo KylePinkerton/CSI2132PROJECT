@@ -38,6 +38,15 @@ class DB:
 
   def valid_username(self, username):
     self.cursor.execute(f"select count(username) from person where username='{username}'")
+
+  def select_from_person(self, username, field):
+    self.cursor.execute(f"select {field} from person where username='{username}'")
+  
+  def select_from_person_email(self, username):
+    self.cursor.execute(f"select email_address from person_email_address where username='{username}'")
+
+  def select_from_person_phone(self, username):
+    self.cursor.execute(f"select phone_number from person_phone_number where username='{username}'")
   
   def get_picture(self, username):
     self.cursor.execute(f"select profile_picture from users where username='{username}'")

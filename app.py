@@ -26,9 +26,35 @@ def user_loader(username):
   user = User()
   if username_count[0]:
     user.id = username
-    #do a bunch of initializations?
+    #do a bunch of initializations????
     db.get_picture(username)
     picture = db.fetch_one()[0]
+    db.select_from_person(username, 'first_name')
+    user.first_name = db.fetch_one()[0]
+    db.select_from_person(username, 'middle_name')
+    user.middle_name = db.fetch_one()[0]
+    db.select_from_person(username, 'last_name')
+    user.last_name = db.fetch_one()[0]
+    db.select_from_person(username, 'password')
+    user.password = db.fetch_one()[0]
+    db.select_from_person(username, 'street_number')
+    user.street_number = db.fetch_one()[0]
+    db.select_from_person(username, 'street_name')
+    user.street_name = db.fetch_one()[0]
+    db.select_from_person(username, 'apt_number')
+    user.apt_number = db.fetch_one()[0]
+    db.select_from_person(username, 'postal_code')
+    user.postal_code = db.fetch_one()[0]
+    db.select_from_person(username, 'date_of_birth')
+    user.date_of_birth = db.fetch_one()[0]
+    db.select_from_person(username, 'country')
+    user.country = db.fetch_one()[0]
+    db.select_from_person(username, 'province')
+    user.province = db.fetch_one()[0]
+    db.select_from_person_email(username)
+    user.email = db.fetch_all()
+    db.select_from_person_phone(username)
+    phone_number = db.fetch_all()
     user.image_file = picture
     return user
   return
@@ -80,6 +106,7 @@ def register():
 
   form = RegistrationForm()
   try:
+    user = User()
     if form.validate_on_submit():
       account_details['first_name'] = request.form.get('first_name')
       account_details['middle_name'] = request.form.get('middle_name', default='NULL')
