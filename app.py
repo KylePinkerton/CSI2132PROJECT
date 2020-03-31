@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, flash, redirect
+from flask import Flask, request, render_template, url_for, flash, redirect, abort
 import sys
 from PIL import Image
 sys.path.insert(1, './db')
@@ -18,6 +18,10 @@ login_manager.login_message_category = 'info'
 
 class User(UserMixin):
   pass
+
+@app.errorhandler(404)
+def page_not_found(e):
+  return render_template('404.html'), 404
 
 @login_manager.user_loader
 def user_loader(username):
@@ -320,6 +324,9 @@ def individual_property(propertyname):
   property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
   db.get_property(propertyname)
   property_rows = db.fetch_one()
+  if property_rows == None:
+    abort(404)
+    return
   property_map = {}
   for i, column in enumerate(property_rows, 0):
     property_map[property_columns[i]] = column
@@ -335,6 +342,10 @@ def user_profile(username):
   user_columns = ['username', 'join_date', 'verified', 'about', 'languages', 'work', 'profile_picture']
   db.get_user(username)
   user_rows = db.fetch_one()
+  if user_rows == None:
+    abort(404)
+    return
+
   user_map = {}
   for i, column in enumerate(user_rows, 0):
     user_map[user_columns[i]] = column
