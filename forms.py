@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Regexp, ValidationError
 from db import db
 import phonenumbers
@@ -76,3 +76,27 @@ class ChangeNumber(FlaskForm):
           raise ValidationError('Invalid phone number.')
       except Exception as e:
         raise ValidationError('Invalid phone number.')
+
+class GetVerified(FlaskForm):
+  verified = BooleanField('Would you like to be verified?', validators=[DataRequired()])
+  submit = SubmitField('Get Verified')
+
+class UpdateAbout(FlaskForm):
+  about = StringField('About',
+                          validators=[DataRequired(), Length(min=1, max=100)])
+  submit = SubmitField('Update')
+
+class UpdateLanguages(FlaskForm):
+  languages = StringField('Languages',
+                          validators=[DataRequired(), Length(min=1, max=50)])
+  submit = SubmitField('Update')
+
+class UpdateWork(FlaskForm):
+  work = StringField('Work',
+                          validators=[DataRequired(), Length(min=1, max=50)])
+  submit = SubmitField('Update')
+
+
+
+ 
+

@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Account Info</h1>
+  <div>
+    <ul class="list-group">
+      First Name
+      <li class="list-group-item">{{ current_user.first_name }}</li> <br>
+      Middle Name
+      <li class="list-group-item">{{ current_user.middle_name if current_user.middle_name != "NULL" else "N/A" }}</li> <br>
+      Last Name
+      <li class="list-group-item">{{ current_user.last_name }}</li> <br>
+      Username
+      <li class="list-group-item">{{ current_user.id }}</li> <br>
+      Password
+      <li class="list-group-item">{{ current_user.password }}</li> <br>
+      Street Number
+      <li class="list-group-item">{{ current_user.street_number }}</li> <br>
+      Street Name
+      <li class="list-group-item">{{ current_user.street_name }}</li> <br>
+      Apartment Number
+      <li class="list-group-item">{{ current_user.apartment_number if current_user.apartment_number != NaN else "N/A" }}</li> <br>
+      Postal Code
+      <li class="list-group-item">{{ current_user.postal_code }}</li> <br>
+      Date of Birth
+      <li class="list-group-item">{{ current_user.date_of_birth }}</li> <br>
+      Country
+      <li class="list-group-item">{{ current_user.country }}</li> <br>
+      Province/State
+      <li class="list-group-item">{{ current_user.province }}</li> <br>
+      Email
+      {% for email in current_user.email %}
+        <li class="list-group-item">{{ email[0] }}</li> <br>
+      {% endfor %}
+      Phone
+      {% for phone in current_user.phone_number %}
+        <li class="list-group-item">{{ phone[0] }}</li> <br>
+      {% endfor %}
+      <a class="ml-2" href="{{ url_for('account_change_number') }}">Change Phone Number</a> <br>
+    </ul>
+  </div>
+{% endblock content %}

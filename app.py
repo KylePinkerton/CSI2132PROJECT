@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
@@ -27,8 +27,7 @@ def user_loader(username):
   if username_count[0]:
     user.id = username
     #do a bunch of initializations????
-    db.get_picture(username)
-    picture = db.fetch_one()[0]
+    #peron table
     db.select_from_person(username, 'first_name')
     user.first_name = db.fetch_one()[0]
     db.select_from_person(username, 'middle_name')
@@ -55,7 +54,19 @@ def user_loader(username):
     user.email = db.fetch_all()
     db.select_from_person_phone(username)
     user.phone_number = db.fetch_all()
-    user.image_file = picture
+    #users table 
+    db.get_join_date(username)
+    user.join_date = db.fetch_one()[0]
+    db.get_verified(username)
+    user.verified = db.fetch_one()[0]
+    db.get_about(username)
+    user.about = db.fetch_one()[0]
+    db.get_languages(username)
+    user.languages = db.fetch_one()[0]
+    db.get_work(username)
+    user.work = db.fetch_one()[0]
+    db.get_picture(username)
+    user.picture = db.fetch_one()[0]
     return user
   return
 
@@ -155,13 +166,18 @@ def account():
   form = AccountPicture()
   if form.validate_on_submit():
     picture_file = save_picture(form.picture.data)
-    current_user.image_file = picture_file
+    current_user.picture = picture_file
     db.update_picture(current_user.id, picture_file)
     db.commit()
     flash('Your account has been updated', 'success')
-  image_file = url_for('static', filename='images/' + current_user.image_file)
-  return render_template('account.html', title='Account', form=form, image_file=image_file)
+  picture = url_for('static', filename='images/' + current_user.picture)
+  return render_template('account.html', title='Account', form=form, picture=picture)
 
+@app.route("/accountinfo", methods=["GET", "POST"])
+@login_required
+def account_info():
+  return render_template('account_info.html')
+  
 @app.route("/changenumber", methods=["GET", "POST"])
 @login_required
 def account_change_number():
@@ -174,6 +190,53 @@ def account_change_number():
     flash('Your Phone number has been updated', 'success')
     return redirect(url_for('account'))
   return render_template('account_change_number.html', form=form)
+
+@app.route("/accountgetverified", methods=["GET", "POST"])
+@login_required
+def account_get_verified():
+  form = GetVerified()
+  if form.validate_on_submit():
+    db.update_verified(current_user.id)
+    db.commit()
+    flash('Your account has been verified!', 'success')
+    return redirect(url_for('account'))
+  return render_template('account_get_verified.html', form=form)
+
+@app.route("/accountupdateabout", methods=["GET", "POST"])
+@login_required
+def account_update_about():
+  form = UpdateAbout()
+  if form.validate_on_submit():
+    about = request.form.get('about')
+    db.update_about(current_user.id, about)
+    db.commit()
+    flash('Your account has been updated!', 'success')
+    return redirect(url_for('account'))
+  return render_template('account_update_about.html', form=form)
+
+@app.route("/accountupdatelanguages", methods=["GET", "POST"])
+@login_required
+def account_update_languages():
+  form = UpdateLanguages()
+  if form.validate_on_submit():
+    languages = request.form.get('languages')
+    db.update_languages(current_user.id, languages)
+    db.commit()
+    flash('Your account has been updated!', 'success')
+    return redirect(url_for('account'))
+  return render_template('account_update_languages.html', form=form)
+
+@app.route("/accountupdatework", methods=["GET", "POST"])
+@login_required
+def account_update_work():
+  form = UpdateWork()
+  if form.validate_on_submit():
+    work = request.form.get('work')
+    db.update_work(current_user.id, work)
+    db.commit()
+    flash('Your account has been updated!', 'success')
+    return redirect(url_for('account'))
+  return render_template('account_update_work.html', form=form)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():

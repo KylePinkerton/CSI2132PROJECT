@@ -3,7 +3,7 @@
   <h1>Your Account: {{current_user.id}} </h1>
   <div class="content-section">
     <div class="media">
-      <img class="rounded-circle account-img" src="{{ image_file }}">
+      <img class="rounded-circle account-img" src="{{ picture }}">
       <div>
         <form method="POST" action="" enctype="multipart/form-data">
           {{ form.hidden_tag() }}
@@ -25,6 +25,7 @@
       </div>
       <div>
         <ul class="list-group">
+          <a class="ml-2" href="{{ url_for('account_info') }}">Account Info</a>
           <a class="ml-2" href="{{ url_for('account') }}">Your Properties</a>
           <a class="ml-2" href="{{ url_for('account') }}">Your Bookings</a>
           <a class="ml-2" href="{{ url_for('account') }}">Payment Method</a>
@@ -34,40 +35,20 @@
     </div>
     <div>
       <ul class="list-group">
-        First Name
-        <li class="list-group-item">{{ current_user.first_name }}</li> <br>
-        Middle Name
-        <li class="list-group-item">{{ current_user.middle_name if current_user.middle_name != "NULL" else "N/A" }}</li> <br>
-        Last Name
-        <li class="list-group-item">{{ current_user.last_name }}</li> <br>
-        Username
-        <li class="list-group-item">{{ current_user.id }}</li> <br>
-        Password
-        <li class="list-group-item">{{ current_user.password }}</li> <br>
-        Street Number
-        <li class="list-group-item">{{ current_user.street_number }}</li> <br>
-        Street Name
-        <li class="list-group-item">{{ current_user.street_name }}</li> <br>
-        Apartment Number
-        <li class="list-group-item">{{ current_user.apartment_number if current_user.apartment_number != NaN else "N/A" }}</li> <br>
-        Postal Code
-        <li class="list-group-item">{{ current_user.postal_code }}</li> <br>
-        Date of Birth
-        <li class="list-group-item">{{ current_user.date_of_birth }}</li> <br>
-        Country
-        <li class="list-group-item">{{ current_user.country }}</li> <br>
-        Province/State
-        <li class="list-group-item">{{ current_user.province }}</li> <br>
-        Email
-        {% for email in current_user.email %}
-          <li class="list-group-item">{{ email[0] }}</li> <br>
-        {% endfor %}
-        Phone
-        {% for phone in current_user.phone_number %}
-          <li class="list-group-item">{{ phone[0] }}</li> <br>
-        {% endfor %}
-        <a class="ml-2" href="{{ url_for('account_change_number') }}">Change Phone Number</a>
-      </ul>
+        Join Date
+        <li class="list-group-item">{{ current_user.join_date }}</li> <br>
+        Verified
+        <li class="list-group-item">{{ current_user.verified }}</li>
+        <a class="ml-2" href="{{ url_for('account_get_verified') }}">Get Verified</a> <br>
+        About
+        <li class="list-group-item">{{ current_user.about }}</li>
+        <a class="ml-2" href="{{ url_for('account_update_about') }}">Update</a> <br>
+        Languages
+        <li class="list-group-item">{{ current_user.languages}}</li>
+        <a class="ml-2" href="{{ url_for('account_update_languages') }}">Update</a> <br>
+        Work
+        <li class="list-group-item">{{ current_user.work if current_user.work != "null" else "N/A"}}</li>
+        <a class="ml-2" href="{{ url_for('account_update_work') }}">Update</a> <br>
     </div>
   </div>
 {% endblock content %}

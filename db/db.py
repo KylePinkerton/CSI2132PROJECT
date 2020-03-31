@@ -8,6 +8,7 @@ class DB:
     self.connection = connection
     self.cursor = self.connection.cursor
   
+  #basic db stuff
   def fetch_all(self):
     return self.cursor.fetchall()
   
@@ -17,6 +18,7 @@ class DB:
   def commit(self):
     self.connection.commit()
 
+  #person
   def valid_account(self, username, password):
     try:
       self.cursor.execute(f"select {username} from person")
@@ -48,9 +50,6 @@ class DB:
   def select_from_person_phone(self, username):
     self.cursor.execute(f"select phone_number from person_phone_number where username='{username}'")
   
-  def get_picture(self, username):
-    self.cursor.execute(f"select profile_picture from users where username='{username}'")
-  
   def insert_email(self, username, email):
     self.cursor.execute(f"insert into person_email_address (username, email_address) VALUES ('{username}', '{email}')")
   
@@ -74,6 +73,39 @@ class DB:
     self.cursor.execute(f"""INSERT INTO users (username, join_date, verified, about, languages, work, profile_picture) VALUES ('{username}', '{join_date}', 'false', 'about me', 'English', 'null', 'default.png')""")
     self.cursor.execute(f"insert into person_phone_number (username, phone_number) VALUES ('{username}', '{phone_number}')")
     self.cursor.execute(f"insert into person_email_address (username, email_address) VALUES ('{username}', '{email}')")
+  
+  #users
+  def get_join_date(self, username):
+    self.cursor.execute(f"select join_date from users where username='{username}'")
+  
+  def get_verified(self, username):
+    self.cursor.execute(f"select verified from users where username='{username}'")
+
+  def get_about(self, username):
+    self.cursor.execute(f"select about from users where username='{username}'")
+
+  def get_languages(self, username):
+    self.cursor.execute(f"select languages from users where username='{username}'")
+  
+  def get_work(self, username):
+    self.cursor.execute(f"select work from users where username='{username}'")
+  
+  def get_picture(self, username):
+    self.cursor.execute(f"select profile_picture from users where username='{username}'")
+
+  def update_verified(self, username):
+    self.cursor.execute(f"update users set verified='True' where username='{username}'")
+  
+  def update_about(self, username, about):
+    self.cursor.execute(f"update users set about='{about}' where username='{username}'")
+
+  def update_languages(self, username, languages):
+    self.cursor.execute(f"update users set languages='{languages}' where username='{username}'")
+
+  def update_work(self, username, work):
+      self.cursor.execute(f"update users set work='{work}' where username='{username}'")
+
+
 
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)
