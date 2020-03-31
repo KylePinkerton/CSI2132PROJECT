@@ -72,7 +72,24 @@ def user_loader(username):
 
 @app.route('/')
 def index():
-  return render_template("homepage.html")
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  properties = []
+  db.get_homepage_properties()
+  property_rows = db.fetch_all()
+
+  for row in property_rows:
+    property_map = {}
+    for k in range(len(property_columns)):
+      property_map[property_columns[k]] = row[k]
+    
+    properties.append(property_map)
+  
+  for prop in properties:
+    db.get_picture(prop['hostusername'])
+    picture = db.fetch_one()[0]
+    prop['profile_picture'] = picture
+
+  return render_template("homepage.html", properties=properties)
 
 @app.route('/log_in', methods=['GET', 'POST'])
 def log_in():
