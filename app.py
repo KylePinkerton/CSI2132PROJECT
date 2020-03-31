@@ -265,6 +265,10 @@ def your_properties():
   db.get_users_properties(current_user.id)
   property_rows = db.fetch_all()
 
+  if property_rows == None:
+    abort(404)
+    return
+
   for row in property_rows:
     property_map = {}
     for k in range(len(property_columns)):
@@ -274,6 +278,28 @@ def your_properties():
 
   current_user.properties = properties
   return render_template('your_properties.html')
+
+@app.route("/paymentmethod", methods=["GET", "POST"])
+@login_required
+def your_payment_method():
+  payment_columns = ['username', 'card_type', 'first_name', 'last_name', 'card_number', 'card_expiration', 'cvv', 'billing_country']
+  methods = []
+  db.get_users_payment_methods(current_user.id)
+  methods_rows = db.fetch_all()
+
+  if methods_rows == None:
+    abort(404)
+    return
+
+  for row in methods_rows:
+    methods_map = {}
+    for k in range(len(methods_columns)):
+      methods_map[methods_columns[k]] = row[k]
+    
+    methods.append(methods_map)
+
+  current_user.methods = methods
+  return render_template('your_payment_method.html', methods=methods)
 
 @app.route("/addproperty", methods=["GET", "POST"])
 @login_required

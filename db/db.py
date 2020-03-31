@@ -124,6 +124,10 @@ class DB:
   def create_property(self, property_name, street_number, street_name, apt_number, postal_code, rent_rate, country, province, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, current_user_id):
     self.cursor.execute(f"insert into property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, type, max_guests, number_beds, number_baths, accesible, pets_allowed, country, hostusername) VALUES ('{property_name}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{current_user_id}')")
 
+  #payment_method
+  def get_users_payment_methods(self, username):
+      self.cursor.execute(f"select * from payment_method where username='{username}'")
+
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)
 

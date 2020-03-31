@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Your Payment Methods (Amount: {{ methods|length }})</h1>
+  <a class="ml-2" href="{{ url_for('account') }}">Add A Payment Method</a> <br>
+  {% for method in methods %}
+    <article class="media content-section">
+      <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + current_user.picture) }}">
+      <div class="media-body">
+        <div class="article-metadata">
+          <li class="list-group-item">Card Type: {{ method['card_type'] }}</li>
+          <li class="list-group-item">First Name: {{ method['first_name'] }}</li>
+          <li class="list-group-item">Last Name: {{ method['last_name'] }}</li>
+          <li class="list-group-item">Card Number: {{ method['card_number'] }}</li>
+          <li class="list-group-item">Card Expiration: {{ method['card_expiration'] }}</li>
+          <li class="list-group-item">CVV: {{ method['cvv'] }}</li>
+          <li class="list-group-item">Billing Country: {{ method ['billing_country'] }}</li>
+          <br>
+        </div>
+      </article>
+    {% endfor %}
+{% endblock content %}
