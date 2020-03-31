@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
@@ -111,9 +111,7 @@ def logout():
 def register():
   if current_user.is_authenticated:
     return redirect(url_for('index'))
-  account_details = {'first_name' : 'NULL', 'middle_name' : 'NULL', 'last_name' : 'NULL', 'user_name' : 'NULL', 'password' : 'NULL', 
-                    'street_number' : 'NULL', 'street_name' : 'NULL', 'apt_number' : 'NULL', 'postal_code' : 'NULL', 'date_of_birth' : 'NULL',
-                    'country' : 'NULL', 'province' : 'NULL', 'email' : 'NULL', 'phone_number' : 'NULL'}
+  account_details = {}
 
   form = RegistrationForm()
   try:
@@ -188,7 +186,7 @@ def account_change_number():
     db.update_phone_number(current_user.id, phone_number)
     db.commit()
     flash('Your Phone number has been updated', 'success')
-    return redirect(url_for('account'))
+    return redirect(url_for('account_info'))
   return render_template('account_change_number.html', form=form)
 
 @app.route("/accountgetverified", methods=["GET", "POST"])
@@ -237,6 +235,60 @@ def account_update_work():
     flash('Your account has been updated!', 'success')
     return redirect(url_for('account'))
   return render_template('account_update_work.html', form=form)
+
+@app.route("/yourproperties", methods=["GET", "POST"])
+@login_required
+def your_properties():
+  db.get_users_properties(current_user.id)
+  properties = db.fetch_all()
+  current_user.properties = properties
+  return render_template('your_properties.html')
+
+@app.route("/addproperty", methods=["GET", "POST"])
+@login_required
+def add_property():
+  property_details = {}
+
+  form = CreateProperty()
+  try:
+    user = User()
+    if form.validate_on_submit():
+      property_details['property_name'] = request.form.get('property_name')
+      property_details['street_number'] = request.form.get('street_number', default='NULL')
+      property_details['street_name'] = request.form.get('street_name')
+      property_details['apt_number'] = request.form.get('apt_number')
+      property_details['postal_code'] = request.form.get('postal_code')
+      property_details['rent_rate'] = request.form.get('rent_rate')
+      property_details['country'] = request.form.get('country')
+      property_details['province'] = request.form.get('province')
+      property_details['property_type'] = request.form.get('property_type')
+      property_details['max_guests'] = request.form.get('max_guests')
+      property_details['number_beds'] = request.form.get('number_beds')
+      property_details['number_baths'] = request.form.get('number_baths')
+      property_details['accessible'] = request.form.get('accessible')
+      property_details['pets_allowed'] = request.form.get('pets_allowed')
+      #deal with weird cases for optional (can be null) arguments
+      if property_details['apt_number'] == "":
+        property_details['apt_number'] = "NaN"
+      if property_details['postal_code'] == "":
+        property_details['postal_code'] = "NULL"
+      if property_details['accessible'] == "n":
+        property_details['accessible'] = "False"
+      else: 
+        property_details['accessible'] = "True"
+      if property_details['pets_allowed'] == "n":
+        property_details['pets_allowed'] = "False"
+      else: 
+        property_details['pets_allowed'] = "True"
+      db.create_property(property_details['property_name'], property_details['street_number'], property_details['street_name'], property_details['apt_number'], property_details['postal_code'], property_details['rent_rate'], property_details['country'], property_details['province'], property_details['property_type'], property_details['max_guests'], property_details['number_beds'], property_details['number_baths'], property_details['accessible'], property_details['pets_allowed'], current_user.id)
+      flash(f'Property created for {form.property_name.data}!', 'success')
+      db.commit()
+      return redirect(url_for('your_properties'))
+  except Exception as e:
+    print(e)
+    flash('Please enter your country/province', 'danger')
+    return render_template('add_property.html', title='Add Property', form=form)
+  return render_template('add_property.html', title='Add Property', form=form)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():

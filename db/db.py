@@ -95,17 +95,25 @@ class DB:
 
   def update_verified(self, username):
     self.cursor.execute(f"update users set verified='True' where username='{username}'")
+
+  def update_work(self, username, work):
+    self.cursor.execute(f"update users set work='{work}' where username='{username}'")
   
   def update_about(self, username, about):
     self.cursor.execute(f"update users set about='{about}' where username='{username}'")
 
   def update_languages(self, username, languages):
     self.cursor.execute(f"update users set languages='{languages}' where username='{username}'")
+  
+  #property
+  def get_users_properties(self, username):
+      self.cursor.execute(f"select propertyname from property where hostusername='{username}'")
+  
+  def valid_propertyname(self, propertyname):
+    self.cursor.execute(f"select count(propertyname) from property where propertyname='{propertyname}'")
 
-  def update_work(self, username, work):
-      self.cursor.execute(f"update users set work='{work}' where username='{username}'")
-
-
+  def create_property(self, property_name, street_number, street_name, apt_number, postal_code, rent_rate, country, province, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, current_user_id):
+    self.cursor.execute(f"insert into property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, type, max_guests, number_beds, number_baths, accesible, pets_allowed, country, hostusername) VALUES ('{property_name}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{current_user_id}')")
 
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)

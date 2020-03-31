@@ -1,0 +1,183 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+  <form method="POST" action="">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Add Your Property!</legend>
+          <div class="form-group">
+            {{ form.property_name.label(class="form-control-label") }}
+            {% if form.property_name.errors %}
+                {{ form.property_name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.property_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.property_name(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.street_number.label(class="form-control-label") }}
+            {% if form.street_number.errors %}
+                {{ form.street_number(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.street_number.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.street_number(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.street_name.label(class="form-control-label") }}
+            {% if form.street_name.errors %}
+                {{ form.street_name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.street_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.street_name(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.apt_number.label(class="form-control-label") }}
+              {% if form.apt_number.errors %}
+                  {{ form.apt_number(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.apt_number.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.apt_number(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.postal_code.label(class="form-control-label") }}
+              {% if form.postal_code.errors %}
+                  {{ form.postal_code(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.postal_code.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.postal_code(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.rent_rate.label(class="form-control-label") }}
+              {% if form.rent_rate.errors %}
+                  {{ form.rent_rate(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.rent_rate.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.rent_rate(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.property_type.label(class="form-control-label") }}
+            {% if form.property_type.errors %}
+                {{ form.property_type(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.property_type.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.property_type(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.max_guests.label(class="form-control-label") }}
+            {% if form.max_guests.errors %}
+                {{ form.max_guests(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.max_guests.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.max_guests(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.number_beds.label(class="form-control-label") }}
+            {% if form.number_beds.errors %}
+                {{ form.number_beds(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.number_beds.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.number_beds(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.number_baths.label(class="form-control-label") }}
+            {% if form.number_baths.errors %}
+                {{ form.number_baths(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.number_baths.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.number_baths(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.accessible.label(class="form-control-label") }}
+            {% if form.accessible.errors %}
+                {{ form.accessible(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.accessible.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.accessible(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.pets_allowed.label(class="form-control-label") }}
+            {% if form.pets_allowed.errors %}
+                {{ form.pets_allowed(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.pets_allowed.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.pets_allowed(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+      </fieldset>
+      <div style='text-align:center;'>
+        <script type= "text/javascript" src = "../static/js/countries.js"></script>
+        Select Country:   <select id="country" name ="country"></select> </br></br>
+        Select Province/State: <select name ="province" id ="province"></select>  </br> </br> <hr/>
+      </div>
+      <script language="javascript">
+        populateCountries("country", "province"); // first parameter is id of country drop-down and second parameter is id of state drop-down
+      </script>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+<div class="border-top pt-3">
+  <small class="text-muted">
+      Already Have An Account? <a class="ml-2" href="{{ url_for('log_in') }}">Sign In</a>
+  </small>
+</div>
+{% endblock content %}

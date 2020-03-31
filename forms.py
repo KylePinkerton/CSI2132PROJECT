@@ -96,7 +96,36 @@ class UpdateWork(FlaskForm):
                           validators=[DataRequired(), Length(min=1, max=50)])
   submit = SubmitField('Update')
 
+class CreateProperty(FlaskForm):
+  property_name = StringField('Property Name',
+                          validators=[DataRequired(), Length(min=1, max=20)])
+  street_number = IntegerField('Street Number', validators=[DataRequired(), NumberRange(min=1, max=99999)])
+  street_name = StringField('Street Name', validators=[DataRequired(), Length(min=1, max=20)])
+  apt_number = StringField('Apartment Number (optional)', validators=[Length(max=5)])
+  postal_code = StringField('Postal Code',
+                          validators=[DataRequired(), Length(min=6, max=20)])
+  rent_rate = IntegerField('Rent Rate (Per Night)',
+                          validators=[DataRequired(), NumberRange(min=1, max=9999)])
+  property_type = StringField('Property Type (Entire, Private, or Shared)', validators=[DataRequired()])
+  max_guests = IntegerField('Maximum Guests',
+                          validators=[NumberRange(min=1, max=99)])
+  number_beds = IntegerField('Number of Beds',
+                          validators=[NumberRange(min=1, max=99)])
+  number_baths = IntegerField('Number of Baths',
+                          validators=[NumberRange(min=1, max=99)])  
+  accessible = BooleanField('Accessible?')
+  pets_allowed = BooleanField('Pets Allowed?')                                              
+  submit = SubmitField('Create Property')
 
+  def validate_propertyname(self, propertyname):
+    db.valid_propertyname(propertyname.data)
+    propertyname_count = db.fetch_one()
+    if propertyname_count[0]:
+      raise ValidationError("That propertyname is taken. Please choose another propertyname.")
+
+  def validate_proprty_type(form, property_type):
+    if property_type.data.lower != ('entire' or 'private' or 'shared'):
+      raise ValidationError('Invalid phone number.')
 
  
 
