@@ -6,8 +6,7 @@
       <img class="rounded-circle account-img" src="{{ url_for('static', filename='images/' + user_map['profile_picture']) }}">
       <div>
         <ul class="list-group">
-          <a class="ml-2" href="{{ url_for('account_info') }}"></a>
-          <a class="ml-2" href="{{ url_for('your_properties') }}">View Properties</a>
+          <a class="ml-2" href="{{ url_for('user_properties', username=user_map['username']) }}">View Properties</a>
           <a class="ml-2" href="{{ url_for('account') }}">Send a message</a>
         </ul>
       </div>

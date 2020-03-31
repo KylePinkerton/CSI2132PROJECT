@@ -323,6 +323,26 @@ def user_profile(username):
     user_map[user_columns[i]] = column
   return render_template('user_profile.html', user_map = user_map)
 
+@app.route("/<string:username>/properties")
+def user_properties(username):
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  properties = []
+  db.get_users_properties(username)
+  property_rows = db.fetch_all()
+
+  for row in property_rows:
+    property_map = {}
+    for k in range(len(property_columns)):
+      property_map[property_columns[k]] = row[k]
+    
+    properties.append(property_map)
+  
+  db.get_picture(username)
+  host_picture = db.fetch_one()[0]
+
+  return render_template('user_properties.html', properties=properties, host_picture=host_picture, username=username)
+
+
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
     def shutdown_server():
