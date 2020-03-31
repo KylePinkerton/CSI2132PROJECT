@@ -1,13 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>{{user_map['username']}}'s Profile </h1>
+  <h1>
+    {% if current_user.id != user_map['username'] %}
+      {{user_map['username']}}'s Profile 
+    {% else %}
+      Your Profile
+    {% endif %}
+  </h1>
   <div class="content-section">
     <div class="media">
       <img class="rounded-circle account-img" src="{{ url_for('static', filename='images/' + user_map['profile_picture']) }}">
       <div>
         <ul class="list-group">
           <a class="ml-2" href="{{ url_for('user_properties', username=user_map['username']) }}">View Properties</a>
-          <a class="ml-2" href="{{ url_for('account') }}">Send a message</a>
+          {% if current_user.id != user_map['username'] %}
+            <a class="ml-2" href="{{ url_for('account') }}">Send a message</a>
+          {% endif %}
         </ul>
       </div>
     </div>
