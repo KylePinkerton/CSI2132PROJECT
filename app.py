@@ -248,10 +248,8 @@ def your_properties():
 @login_required
 def add_property():
   property_details = {}
-
   form = CreateProperty()
   try:
-    user = User()
     if form.validate_on_submit():
       property_details['property_name'] = request.form.get('property_name')
       property_details['street_number'] = request.form.get('street_number', default='NULL')
