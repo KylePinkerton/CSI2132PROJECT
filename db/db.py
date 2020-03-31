@@ -107,7 +107,7 @@ class DB:
   
   #property
   def get_users_properties(self, username):
-      self.cursor.execute(f"select propertyname from property where hostusername='{username}'")
+      self.cursor.execute(f"select * from property where hostusername='{username}'")
   
   def valid_propertyname(self, propertyname):
     self.cursor.execute(f"select count(propertyname) from property where propertyname='{propertyname}'")

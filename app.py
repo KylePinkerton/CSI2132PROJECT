@@ -239,8 +239,18 @@ def account_update_work():
 @app.route("/yourproperties", methods=["GET", "POST"])
 @login_required
 def your_properties():
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  properties = []
   db.get_users_properties(current_user.id)
-  properties = db.fetch_all()
+  property_rows = db.fetch_all()
+        
+  for i, row in enumerate(property_rows, 1):
+    property_map = {}
+    for k, column in enumerate(property_columns, 0):
+      property_map[property_columns[k]] = row[k]
+    
+    properties.append(property_map)
+
   current_user.properties = properties
   return render_template('your_properties.html')
 

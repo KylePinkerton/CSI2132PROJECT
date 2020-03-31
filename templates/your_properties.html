@@ -1,14 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Your Properties (Total: {{ current_user.properties|length }})</h1>
-    <a class="ml-2" href="{{ url_for('add_property') }}">Add A Property</a> <br>
-    {% for property in current_user.properties %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + current_user.picture) }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ current_user.id }}</a>
-            </div>
-        </article>
+  <h1>Your Properties (Total: {{ current_user.properties|length }})</h1>
+  <a class="ml-2" href="{{ url_for('add_property') }}">Add A Property</a> <br>
+  {% for property in current_user.properties %}
+    <article class="media content-section">
+      <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + current_user.picture) }}">
+      <div class="media-body">
+        <div class="article-metadata">
+          <a class="mr-2" href="#">{{ property['propertyname'] }}</a>
+            <li class="list-group-item">Country: {{ property['country'] }}</li>
+            <li class="list-group-item">Province: {{ property['province'] }}</li>
+            <li class="list-group-item">Rent Rate: {{ property['rent_rate'] }}</li>
+            <li class="list-group-item">Type: {{ property['type'] }}</li>
+          </ul>
+        </div>
+      </article>
     {% endfor %}
 {% endblock content %}
