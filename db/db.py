@@ -106,6 +106,9 @@ class DB:
     self.cursor.execute(f"update users set languages='{languages}' where username='{username}'")
   
   #property
+  def get_property(self, propertyname):
+      self.cursor.execute(f"select * from property where propertyname='{propertyname}'")
+
   def get_users_properties(self, username):
       self.cursor.execute(f"select * from property where hostusername='{username}'")
   

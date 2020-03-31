@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+  <a class="ml-2" href="{{ url_for('individual_property', propertyname=property_map['propertyname']) }}">Property : {{ property_map['propertyname']}}</a> <br>
+  <article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + host_picture) }}">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{{ url_for('individual_property', propertyname=property_map['propertyname']) }}">{{ property_map['propertyname'] }}</a>
+          <li class="list-group-item">Country: {{ property_map['country'] }}</li>
+          <li class="list-group-item">Province: {{ property_map['province'] }}</li>
+          <li class="list-group-item">Rent Rate: {{ property_map['rent_rate'] }}</li>
+          <li class="list-group-item">Type: {{ property_map['type'] }}</li>
+          <li class="list-group-item">Max Guests: {{ property_map['max_guests'] }}</li>
+          <li class="list-group-item">Number of Beds: {{ property_map['number_beds'] }}</li>
+          <li class="list-group-item">Number of Baths: {{ property_map['number_baths'] }}</li>
+          <li class="list-group-item">Accessible: {{ property_map['accesible'] }}</li>
+          <li class="list-group-item">Pets Allowed: {{ property_map['pets_allowed'] }}</li>
+          <br>
+          Address Information:
+          <li class="list-group-item">Street Number: {{ property_map['street_number'] }}</li>
+          <li class="list-group-item">Street Name: {{ property_map['street_name'] }}</li>
+          <li class="list-group-item">Apartment Number: {{ property_map['apt_number'] }}</li>
+          <li class="list-group-item">Postal Code: {{ property_map['postal_code'] }}</li>
+      </div>
+    </article>
+{% endblock content %}

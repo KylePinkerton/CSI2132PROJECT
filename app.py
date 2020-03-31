@@ -243,10 +243,10 @@ def your_properties():
   properties = []
   db.get_users_properties(current_user.id)
   property_rows = db.fetch_all()
-        
-  for i, row in enumerate(property_rows, 1):
+
+  for row in property_rows:
     property_map = {}
-    for k, column in enumerate(property_columns, 0):
+    for k in range(len(property_columns)):
       property_map[property_columns[k]] = row[k]
     
     properties.append(property_map)
@@ -297,6 +297,21 @@ def add_property():
     flash('Please enter your country/province', 'danger')
     return render_template('add_property.html', title='Add Property', form=form)
   return render_template('add_property.html', title='Add Property', form=form)
+
+@app.route("/property/<string:propertyname>")
+def individual_property(propertyname):
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  db.get_property(propertyname)
+  property_rows = db.fetch_one()
+  property_map = {}
+  for i, column in enumerate(property_rows, 0):
+    property_map[property_columns[i]] = column
+
+  db.get_picture(property_map['hostusername'])
+  host_picture = db.fetch_one()[0]
+  
+  
+  return render_template('property.html', property_map = property_map, host_picture=host_picture)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
