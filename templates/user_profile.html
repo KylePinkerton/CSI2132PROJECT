@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>{{user_map['username']}}'s Profile </h1>
+  <div class="content-section">
+    <div class="media">
+      <img class="rounded-circle account-img" src="{{ url_for('static', filename='images/' + user_map['profile_picture']) }}">
+      <div>
+        <ul class="list-group">
+          <a class="ml-2" href="{{ url_for('account_info') }}"></a>
+          <a class="ml-2" href="{{ url_for('your_properties') }}">View Properties</a>
+          <a class="ml-2" href="{{ url_for('account') }}">Send a message</a>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <ul class="list-group">
+        Join Date
+        <li class="list-group-item">{{ user_map['join_date'] }}</li> <br>
+        Verified
+        <li class="list-group-item">{{ user_map['verified'] }}</li>
+        About
+        <li class="list-group-item">{{ user_map['about'] }}</li>
+        Languages
+        <li class="list-group-item">{{ user_map['languages'] }}</li>
+        Work
+        <li class="list-group-item">{{ user_map['work'] if user_map['work'] != "null" else "N/A"}}</li>
+    </div>
+  </div>
+{% endblock content %}

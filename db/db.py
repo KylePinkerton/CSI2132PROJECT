@@ -75,6 +75,9 @@ class DB:
     self.cursor.execute(f"insert into person_email_address (username, email_address) VALUES ('{username}', '{email}')")
   
   #users
+  def get_user(self, username):
+    self.cursor.execute(f"select * from users where username='{username}'")
+
   def get_join_date(self, username):
     self.cursor.execute(f"select join_date from users where username='{username}'")
   

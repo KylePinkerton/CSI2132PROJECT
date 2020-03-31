@@ -307,11 +307,21 @@ def individual_property(propertyname):
   for i, column in enumerate(property_rows, 0):
     property_map[property_columns[i]] = column
 
-  db.get_picture(property_map['hostusername'])
+  host_username = property_map['hostusername']
+  db.get_picture(host_username)
   host_picture = db.fetch_one()[0]
-  
-  
-  return render_template('property.html', property_map = property_map, host_picture=host_picture)
+
+  return render_template('property.html', property_map = property_map, host_picture=host_picture, host_username=host_username)
+
+@app.route("/<string:username>")
+def user_profile(username):
+  user_columns = ['username', 'join_date', 'verified', 'about', 'languages', 'work', 'profile_picture']
+  db.get_user(username)
+  user_rows = db.fetch_one()
+  user_map = {}
+  for i, column in enumerate(user_rows, 0):
+    user_map[user_columns[i]] = column
+  return render_template('user_profile.html', user_map = user_map)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():

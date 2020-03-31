@@ -5,7 +5,7 @@
     <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + host_picture) }}">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="{{ url_for('individual_property', propertyname=property_map['propertyname']) }}">{{ property_map['propertyname'] }}</a>
+        <a class="mr-2" href="{{ url_for('user_profile', username=host_username) }}">Host: {{ host_username }}</a>
           <li class="list-group-item">Country: {{ property_map['country'] }}</li>
           <li class="list-group-item">Province: {{ property_map['province'] }}</li>
           <li class="list-group-item">Rent Rate: {{ property_map['rent_rate'] }}</li>
