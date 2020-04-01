@@ -1,6 +1,32 @@
 -- CSI2132 Winter 2020 Project
 -- A list of all the DDLs used
 
+
+------------------------------------------------
+
+-- Table: project.branches
+
+-- DROP TABLE project.branches;
+
+CREATE TABLE project.branches
+(
+    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    branch_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    street_number numeric(5,0) NOT NULL,
+    street_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    apt_number numeric(5,0),
+    province character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    postal_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT branches_pkey PRIMARY KEY (country)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.branches
+    OWNER to kpink074;
+
 ------------------------------------------------
 
 -- Table: project.person
@@ -21,7 +47,11 @@ CREATE TABLE project.person
     province character varying(20) COLLATE pg_catalog."default" NOT NULL,
     postal_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
     date_of_birth date NOT NULL,
-    CONSTRAINT person_pkey PRIMARY KEY (username)
+    CONSTRAINT person_pkey PRIMARY KEY (username),
+    CONSTRAINT person_country_fkey FOREIGN KEY (country)
+        REFERENCES project.branches (country) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
 )
 WITH (
     OIDS = FALSE
@@ -42,10 +72,10 @@ CREATE TABLE project.users
     username character varying(20) COLLATE pg_catalog."default" NOT NULL,
     join_date date NOT NULL,
     verified boolean NOT NULL,
-    about text COLLATE pg_catalog."default",
-    languages text COLLATE pg_catalog."default",
-    work text COLLATE pg_catalog."default",
-    profile_picture character varying(20),
+    about text COLLATE pg_catalog."default" NOT NULL,
+    languages text COLLATE pg_catalog."default" NOT NULL,
+    work text COLLATE pg_catalog."default" NOT NULL,
+    profile_picture character varying(20) NOT NULL,
     CONSTRAINT users_pkey PRIMARY KEY (username),
     CONSTRAINT users_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
@@ -62,30 +92,6 @@ ALTER TABLE project.users
 
 ------------------------------------------------
 
--- Table: project.branches
-
--- DROP TABLE project.branches;
-
-CREATE TABLE project.branches
-(
-    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    street_number numeric(5,0),
-    street_name character varying(20) COLLATE pg_catalog."default",
-    apt_number numeric(5,0),
-    province character varying(20) COLLATE pg_catalog."default",
-    postal_code character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT branches_pkey PRIMARY KEY (country)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.branches
-    OWNER to kpink074;
-
-------------------------------------------------
-
 -- Table: project.property
 
 -- DROP TABLE project.property;
@@ -98,15 +104,16 @@ CREATE TABLE project.property
     apt_number numeric(5,0),
     province character varying(20) COLLATE pg_catalog."default" NOT NULL,
     postal_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    rent_rate numeric(8,2),
-    type character varying(20) COLLATE pg_catalog."default",
-    max_guests numeric(2,0),
-    number_beds numeric(2,0),
-    number_baths numeric(2,0),
-    accesible boolean NOT NULL,
+    rent_rate numeric(8,2) NOT NULL,
+    property_type character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    max_guests numeric(2,0) NOT NULL,
+    number_beds numeric(2,0) NOT NULL,
+    number_baths numeric(2,0) NOT NULL,
+    accessible boolean NOT NULL,
     pets_allowed boolean NOT NULL,
-    country character varying(20) COLLATE pg_catalog."default",
-    hostusername character varying(20) COLLATE pg_catalog."default",
+    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    hostusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    picture character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT property_pkey PRIMARY KEY (propertyname),
     CONSTRAINT property_country_fkey FOREIGN KEY (country)
         REFERENCES project.branches (country) MATCH SIMPLE
@@ -117,7 +124,7 @@ CREATE TABLE project.property
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
     CONSTRAINT property_rent_rate_check CHECK (rent_rate > 0::numeric),
-    CONSTRAINT property_type_check CHECK (type::text = 'entire'::text OR type::text = 'private'::text OR type::text = 'shared'::text),
+    CONSTRAINT property_type_check CHECK (property_type::text = 'entire'::text OR property_type::text = 'private'::text OR property_type::text = 'shared'::text),
     CONSTRAINT property_max_guests_check CHECK (max_guests > 0::numeric),
     CONSTRAINT property_number_beds_check CHECK (number_beds > 0::numeric),
     CONSTRAINT property_number_baths_check CHECK (number_baths > 0::numeric)
@@ -193,12 +200,12 @@ CREATE TABLE project.property_review_details
     username character varying(20) COLLATE pg_catalog."default" NOT NULL,
     propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
     "time" timestamp without time zone NOT NULL,
-    communication numeric(2,1),
-    value numeric(2,1),
-    check_in numeric(2,1),
-    accuracy numeric(2,1),
-    cleanliness numeric(2,1),
-    location numeric(2,1),
+    communication numeric(2,1) NOT NULL,
+    value numeric(2,1) NOT NULL,
+    check_in numeric(2,1) NOT NULL,
+    accuracy numeric(2,1) NOT NULL,
+    cleanliness numeric(2,1) NOT NULL,
+    location numeric(2,1) NOT NULL,
     review_content text COLLATE pg_catalog."default",
     CONSTRAINT property_review_details_pkey PRIMARY KEY (username, propertyname, "time"),
     CONSTRAINT property_review_details_username_fkey FOREIGN KEY (propertyname, username)
@@ -231,14 +238,14 @@ CREATE TABLE project.rental_agreement
     rental_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     start_date date NOT NULL,
     end_date date NOT NULL,
-    sign_date date,
+    sign_date date NOT NULL,
     travelling_for_work boolean NOT NULL,
     message_to_host text COLLATE pg_catalog."default" NOT NULL,
-    total_price numeric(8,2),
+    total_price numeric(8,2) NOT NULL,
     host_accepted boolean NOT NULL,
-    propertyname character varying(20) COLLATE pg_catalog."default",
-    guestusername character varying(20) COLLATE pg_catalog."default",
-    hostusername character varying(20) COLLATE pg_catalog."default",
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    guestusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    hostusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT rental_agreement_pkey PRIMARY KEY (rental_id),
     CONSTRAINT rental_agreement_guestusername_fkey FOREIGN KEY (guestusername)
         REFERENCES project.users (username) MATCH SIMPLE
@@ -286,6 +293,42 @@ ALTER TABLE project.admins
 
 ------------------------------------------------
 
+-- Table: project.employees
+
+-- DROP TABLE project.employees;
+
+CREATE TABLE project.employees
+(
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    title text COLLATE pg_catalog."default" NOT NULL,
+    salary numeric(8,2) NOT NULL,
+    country character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    managerusername character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT employees_pkey PRIMARY KEY (username),
+    CONSTRAINT employees_country_fkey FOREIGN KEY (country)
+        REFERENCES project.branches (country) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT employees_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT employees_managerusername_fkey FOREIGN KEY (managerusername)
+        REFERENCES project.employees (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT employees_salary_check CHECK (salary > 0::numeric)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.employees
+    OWNER to kpink074;
+
+------------------------------------------------
+
 -- Table: project.works_at
 
 -- DROP TABLE project.works_at;
@@ -313,43 +356,6 @@ ALTER TABLE project.works_at
     OWNER to kpink074;
 
 ------------------------------------------------
-
--- Table: project.employees
-
--- DROP TABLE project.employees;
-
-CREATE TABLE project.employees
-(
-    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    title text COLLATE pg_catalog."default" NOT NULL,
-    salary numeric(8,2),
-    country character varying(20) COLLATE pg_catalog."default",
-    managerusername character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT employees_pkey PRIMARY KEY (username),
-    CONSTRAINT employees_country_fkey FOREIGN KEY (country)
-        REFERENCES project.branches (country) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT employees_username_fkey FOREIGN KEY (username)
-        REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT employees_managerusername_fkey FOREIGN KEY (managerusername)
-        REFERENCES project.employees (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
-    CONSTRAINT employees_salary_check CHECK (salary > 0::numeric)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.employees
-    OWNER to kpink074;
-
-------------------------------------------------
-
 -- Table: project.conversation
 
 -- DROP TABLE project.conversation;
@@ -413,10 +419,10 @@ CREATE TABLE project.payment
     payment_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     is_deposit boolean NOT NULL,
     amount numeric(8,2),
-    status character varying(20) COLLATE pg_catalog."default",
-    rental_id character varying(20) COLLATE pg_catalog."default",
-    guestusername character varying(20) COLLATE pg_catalog."default",
-    hostusername character varying(20) COLLATE pg_catalog."default",
+    status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    rental_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    guestusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    hostusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT payment_pkey PRIMARY KEY (payment_id),
     CONSTRAINT payment_guestusername_fkey FOREIGN KEY (guestusername)
         REFERENCES project.users (username) MATCH SIMPLE
@@ -450,18 +456,23 @@ ALTER TABLE project.payment
 CREATE TABLE project.payment_method
 (
     username character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    card_type character varying(20) COLLATE pg_catalog."default",
-    first_name character varying(20) COLLATE pg_catalog."default",
-    last_name character varying(20) COLLATE pg_catalog."default",
-    card_number character varying(20) COLLATE pg_catalog."default",
-    card_expiration date,
-    cvv character varying(3) COLLATE pg_catalog."default",
-    billing_country character varying(20) COLLATE pg_catalog."default",
+    card_type character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    first_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    card_number character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    card_expiration date NOT NULL,
+    cvv character varying(3) COLLATE pg_catalog."default" NOT NULL,
+    billing_country character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT payment_method_pkey PRIMARY KEY (username),
     CONSTRAINT payment_method_username_fkey FOREIGN KEY (username)
         REFERENCES project.users (username) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT payment_method_billing_country_fkey FOREIGN KEY (billing_country)
+        REFERENCES project.branches (country) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT card_type CHECK (card_type::text = 'visa'::text OR card_type::text = 'mastercard'::text)
 )
 WITH (
     OIDS = FALSE
@@ -480,13 +491,7 @@ ALTER TABLE project.payment_method
 CREATE TABLE project.payout_method
 (
     username character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    paypal_address character varying(20) COLLATE pg_catalog."default",
-    account_type character varying(20) COLLATE pg_catalog."default",
-    account_holder_name character varying(20) COLLATE pg_catalog."default",
-    bank_name character varying(20) COLLATE pg_catalog."default",
-    account_number character varying(20) COLLATE pg_catalog."default",
-    transit_number character varying(20) COLLATE pg_catalog."default",
-    insitution_number character varying(20) COLLATE pg_catalog."default",
+    paypal_address character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT payout_method_pkey PRIMARY KEY (username),
     CONSTRAINT payout_method_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
