@@ -140,5 +140,8 @@ class PaymentMethod(FlaskForm):
                           validators=[DataRequired(), NumberRange(min=100, max=999)])
   submit = SubmitField('Add Payment Method')
 
+class PayoutMethod(FlaskForm):
+  paypal_address = StringField('Paypal Address', validators=[DataRequired(), Email(), Length(min=7, max=40)])
+  submit = SubmitField('Add Payout Method')
  
 

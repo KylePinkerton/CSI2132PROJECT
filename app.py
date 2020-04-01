@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
@@ -414,14 +414,9 @@ def shutdown():
 @login_required
 def add_payment_method():
   payment_method = {}
-  print('pay')
   form = PaymentMethod()
-  print('sss')
   try: 
-    print('s11')
-    print(form.validate_on_submit())
     if form.validate_on_submit():
-      print('no')
       payment_method['username'] = current_user.id
       payment_method['card_type'] = request.form.get('card_type')
       payment_method['first_name'] = request.form.get('first_name')
@@ -445,6 +440,42 @@ def add_payment_method():
     flash('Please enter your billing country', 'danger')
     return render_template('add_payment_method.html', title='Add Payment Method', form=form)
   return render_template('add_payment_method.html', title='Add Payment Method', form=form)
+
+@app.route("/payoutmethod", methods=["GET", "POST"])
+@login_required
+def your_payout_method():
+  methods_columns = ['username', 'paypal_address']
+  methods = []
+  db.get_users_payout_methods(current_user.id)
+  methods_rows = db.fetch_all()
+
+  if methods_rows == None:
+    abort(404)
+    return
+
+  for row in methods_rows:
+    methods_map = {}
+    for k in range(len(methods_columns)):
+      methods_map[methods_columns[k]] = row[k]
+    
+    methods.append(methods_map)
+
+  current_user.methods = methods
+  return render_template('your_payout_method.html', methods=methods)
+
+@app.route("/addpayoutmethod", methods=["GET", "POST"])
+@login_required
+def add_payout_method():
+  payout_method = {}
+  form = PayoutMethod()
+  if form.validate_on_submit():
+    payout_method['username'] = current_user.id
+    payout_method['paypal_address'] = request.form.get('paypal_address')
+    db.create_payout_method(payout_method['username'], payout_method['paypal_address'])
+    flash(f'Payout method created!', 'success')
+    db.commit()
+    return redirect(url_for('your_payout_method'))
+  return render_template('add_payout_method.html', title='Add Payout Method', form=form)
 
 if __name__ == "__main__":
   app.run()

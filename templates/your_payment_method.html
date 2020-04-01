@@ -5,7 +5,6 @@
   {% for method in methods %}
     Payment Method {{ loop.index }}
     <article class="media content-section">
-      <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + current_user.picture) }}">
       <div class="media-body">
         <div class="article-metadata">
           <li class="list-group-item">Card Type: {{ method['card_type'] }}</li>

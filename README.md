@@ -13,6 +13,7 @@ rows = query.fetch_all()
 print(rows)
 
 ## fix?
-make rent_rate NOT NULL in property table
-make type to propety_type in propety table
-accessible mispelled in property table (accesible)
+# make rent_rate NOT NULL in property table
+# make type to propety_type in propety table
+# accessible mispelled in property table (accesible)
+# give property picture column

@@ -134,6 +134,13 @@ class DB:
   def create_payment_method(self, username, card_type, first_name, last_name, card_number, card_expiration, cvv, billing_country):
     self.cursor.execute(f"insert into payment_method (username, card_type, first_name, last_name, card_number, card_expiration, cvv, billing_country) VALUES ('{username}', '{card_type}', '{first_name}', '{last_name}', '{card_number}', '{card_expiration}', '{cvv}', '{billing_country}')")
 
+  #payout method
+  def get_users_payout_methods(self, username):
+    self.cursor.execute(f"select * from payout_method where username='{username}'")
+  
+  def create_payout_method(self, username, paypal_address):
+    self.cursor.execute(f"insert into payout_method (username, paypal_address) VALUES ('{username}', '{paypal_address}')")
+
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)
 
