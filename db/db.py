@@ -65,6 +65,9 @@ class DB:
   def get_password_from_username(self, username):
     self.cursor.execute(f"select password from person where username='{username}'")
 
+  def get_country_from_username(self, username):
+    self.cursor.execute(f"select country from person where username='{username}'")
+
   def create_user(self, first_name, middle_name, last_name, username, password, street_number, street_name, apt_number, postal_code, date_of_birth, country, province, email, phone_number):
     join_date = datetime.today().strftime('%Y-%m-%d')
     self.cursor.execute(f"""INSERT INTO person (username, first_name, middle_name, last_name, password, street_number, street_name, apt_number,
@@ -127,6 +130,9 @@ class DB:
   #payment_method
   def get_users_payment_methods(self, username):
       self.cursor.execute(f"select * from payment_method where username='{username}'")
+
+  def create_payment_method(self, username, card_type, first_name, last_name, card_number, card_expiration, cvv, billing_country):
+    self.cursor.execute(f"insert into payment_method (username, card_type, first_name, last_name, card_number, card_expiration, cvv, billing_country) VALUES ('{username}', '{card_type}', '{first_name}', '{last_name}', '{card_number}', '{card_expiration}', '{cvv}', '{billing_country}')")
 
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)

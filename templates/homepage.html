@@ -10,17 +10,19 @@
       <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + property['profile_picture']) }}">
       <div class="media-body">
         <div class="article-metadata">
-          <a class="mr-2" href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">{{ property['propertyname'] }}</a>
-          <li class="list-group-item">Country: {{ property['country'] }}</li>
-          <li class="list-group-item">Province: {{ property['province'] }}</li>
-          <li class="list-group-item">Rent Rate: {{ property['rent_rate'] }}</li>
-          <li class="list-group-item">Type: {{ property['type'] }}</li>
-          <li class="list-group-item">Max Guests: {{ property['max_guests'] }}</li>
-          <li class="list-group-item">Number of Beds: {{ property['number_beds'] }}</li>
-          <li class="list-group-item">Number of Baths: {{ property['number_baths'] }}</li>
-          <li class="list-group-item">Accessible: {{ property['accesible'] }}</li>
-          <li class="list-group-item">Pets Allowed: {{ property['pets_allowed'] }}</li><br>
+          <a class="mr-2" href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">Property: {{ property['propertyname'] }}</a>
         </div>
-      </article>
-    {% endfor %}
+        <a class="mr-2" href="{{ url_for('user_profile', username=property['hostusername']) }}">Host: {{ property['hostusername'] }}</a>
+        <li class="list-group-item">Country: {{ property['country'] }}</li>
+        <li class="list-group-item">Province: {{ property['province'] }}</li>
+        <li class="list-group-item">Rent Rate: {{ property['rent_rate'] }}</li>
+        <li class="list-group-item">Type: {{ property['type'] }}</li>
+        <li class="list-group-item">Max Guests: {{ property['max_guests'] }}</li>
+        <li class="list-group-item">Number of Beds: {{ property['number_beds'] }}</li>
+        <li class="list-group-item">Number of Baths: {{ property['number_baths'] }}</li>
+        <li class="list-group-item">Accessible: {{ property['accesible'] }}</li>
+        <li class="list-group-item">Pets Allowed: {{ property['pets_allowed'] }}</li><br>
+      </div>
+    </article>
+  {% endfor %}
 {% endblock content %}

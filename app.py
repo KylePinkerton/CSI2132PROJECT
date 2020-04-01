@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
@@ -157,13 +157,15 @@ def register():
         account_details['middle_name'] = "NULL"
       if account_details['apt_number'] == "":
         account_details['apt_number'] = "NaN"
+      if account_details['country'] == "-1" or len(account_details['province']) == 0:
+        raise Exception('Please enter a country or province')
       db.create_user(account_details['first_name'], account_details['middle_name'], account_details['last_name'], account_details['username'], account_details['password'], account_details['street_number'], account_details['street_name'], account_details['apt_number'], account_details['postal_code'], account_details['date_of_birth'], account_details['country'], account_details['province'], account_details['email'], account_details['phone_number'])
       flash(f'Account created for {form.username.data}!', 'success')
       db.commit()
       return redirect(url_for('index'))
   except Exception as e:
     print(e)
-    flash('Please enter your country/province', 'danger')
+    flash('Error ' + str(e), 'danger')
     return render_template('register.html', title='Register', form=form)
   return render_template('register.html', title='Register', form=form)
 
@@ -282,7 +284,7 @@ def your_properties():
 @app.route("/paymentmethod", methods=["GET", "POST"])
 @login_required
 def your_payment_method():
-  payment_columns = ['username', 'card_type', 'first_name', 'last_name', 'card_number', 'card_expiration', 'cvv', 'billing_country']
+  methods_columns = ['username', 'card_type', 'first_name', 'last_name', 'card_number', 'card_expiration', 'cvv', 'billing_country']
   methods = []
   db.get_users_payment_methods(current_user.id)
   methods_rows = db.fetch_all()
@@ -407,6 +409,42 @@ def shutdown():
     shutdown_server()
     db.connection.close()
     return "Server shutting down..."
+
+@app.route("/addpaymentmethod", methods=["GET", "POST"])
+@login_required
+def add_payment_method():
+  payment_method = {}
+  print('pay')
+  form = PaymentMethod()
+  print('sss')
+  try: 
+    print('s11')
+    print(form.validate_on_submit())
+    if form.validate_on_submit():
+      print('no')
+      payment_method['username'] = current_user.id
+      payment_method['card_type'] = request.form.get('card_type')
+      payment_method['first_name'] = request.form.get('first_name')
+      payment_method['last_name'] = request.form.get('last_name')
+      payment_method['card_number'] = request.form.get('card_number')
+      payment_method['card_expiration'] = request.form.get('card_expiration')
+      payment_method['cvv'] = str(request.form.get('cvv'))
+      payment_method['billing_country'] = request.form.get('billing_country')
+      #there's a hidden 'province' field here cuz of country.js btw
+      if payment_method['billing_country'] == "-1":
+        raise Exception('Please enter a country or province')
+
+      db.create_payment_method(payment_method['username'], payment_method['card_type'], payment_method['first_name'], payment_method['last_name'], 
+        payment_method['card_number'], payment_method['card_expiration'], payment_method['cvv'], payment_method['billing_country'])
+
+      flash(f'Payment method created!', 'success')
+      db.commit()
+      return redirect(url_for('your_payment_method'))
+  except Exception as e:
+    print(e)
+    flash('Please enter your billing country', 'danger')
+    return render_template('add_payment_method.html', title='Add Payment Method', form=form)
+  return render_template('add_payment_method.html', title='Add Payment Method', form=form)
 
 if __name__ == "__main__":
   app.run()

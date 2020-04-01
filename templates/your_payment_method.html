@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
   <h1>Your Payment Methods (Amount: {{ methods|length }})</h1>
-  <a class="ml-2" href="{{ url_for('account') }}">Add A Payment Method</a> <br>
+  <a class="ml-2" href="{{ url_for('add_payment_method') }}">Add A Payment Method</a> <br>
   {% for method in methods %}
+    Payment Method {{ loop.index }}
     <article class="media content-section">
       <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + current_user.picture) }}">
       <div class="media-body">

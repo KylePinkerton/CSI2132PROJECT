@@ -127,5 +127,18 @@ class CreateProperty(FlaskForm):
     if property_type.data.lower != ('entire' or 'private' or 'shared'):
       raise ValidationError('Invalid phone number.')
 
+class PaymentMethod(FlaskForm):
+  card_type = StringField('Card Type',
+                          validators=[DataRequired(), Length(min=2, max=20)])
+  first_name = StringField('First Name', validators=[DataRequired(), Length(min=1, max=20)])
+  last_name = StringField('Last Name', validators=[DataRequired(), Length(min=1, max=20)])
+  card_number= StringField('Card Number',
+                          validators=[DataRequired(), Length(min=6, max=20)])
+  card_expiration = DateField('Date of Birth (yyyy-mm-dd)',
+                          validators=[DataRequired()])
+  cvv = IntegerField('cvv',
+                          validators=[DataRequired(), NumberRange(min=100, max=999)])
+  submit = SubmitField('Add Payment Method')
+
  
 
