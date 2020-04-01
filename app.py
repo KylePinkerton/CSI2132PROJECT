@@ -76,7 +76,7 @@ def user_loader(username):
 
 @app.route('/')
 def index():
-  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
   properties = []
   db.get_homepage_properties()
   property_rows = db.fetch_all()
@@ -181,6 +181,18 @@ def save_picture(form_picture):
   image.save(picture_path)
   return picture_fn
 
+def save_property_picture(form_picture):
+  random_name = secrets.token_hex(6)
+  _, f_ext = os.path.splitext(form_picture.filename)
+  picture_fn = random_name + f_ext
+  picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
+
+  output_size = (750, 500)
+  image = Image.open(form_picture)
+  image.thumbnail(output_size)
+  image.save(picture_path)
+  return picture_fn
+
 @app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
@@ -262,7 +274,7 @@ def account_update_work():
 @app.route("/yourproperties", methods=["GET", "POST"])
 @login_required
 def your_properties():
-  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
   properties = []
   db.get_users_properties(current_user.id)
   property_rows = db.fetch_all()
@@ -310,6 +322,7 @@ def add_property():
   form = CreateProperty()
   try:
     if form.validate_on_submit():
+      property_details['hostusername'] = current_user.id
       property_details['property_name'] = request.form.get('property_name')
       property_details['street_number'] = request.form.get('street_number', default='NULL')
       property_details['street_name'] = request.form.get('street_name')
@@ -318,12 +331,13 @@ def add_property():
       property_details['rent_rate'] = request.form.get('rent_rate')
       property_details['country'] = request.form.get('country')
       property_details['province'] = request.form.get('province')
-      property_details['property_type'] = request.form.get('property_type')
+      property_details['property_type'] = request.form.get('property_type').lower()
       property_details['max_guests'] = request.form.get('max_guests')
       property_details['number_beds'] = request.form.get('number_beds')
       property_details['number_baths'] = request.form.get('number_baths')
       property_details['accessible'] = request.form.get('accessible')
       property_details['pets_allowed'] = request.form.get('pets_allowed')
+      property_details['picture'] = request.form.get('picture')
       #deal with weird cases for optional (can be null) arguments
       if property_details['apt_number'] == "":
         property_details['apt_number'] = "NaN"
@@ -337,7 +351,12 @@ def add_property():
         property_details['pets_allowed'] = "False"
       else: 
         property_details['pets_allowed'] = "True"
-      db.create_property(property_details['property_name'], property_details['street_number'], property_details['street_name'], property_details['apt_number'], property_details['postal_code'], property_details['rent_rate'], property_details['country'], property_details['province'], property_details['property_type'], property_details['max_guests'], property_details['number_beds'], property_details['number_baths'], property_details['accessible'], property_details['pets_allowed'], current_user.id)
+      
+      if property_details['country'] == "-1" or len(property_details['province']) == 0:
+        raise Exception('Please enter a country or province')
+      
+      picture_file = save_property_picture(form.picture.data)
+      db.create_property(property_details['property_name'], property_details['street_number'], property_details['street_name'], property_details['apt_number'], property_details['postal_code'], property_details['rent_rate'], property_details['country'], property_details['province'], property_details['property_type'], property_details['max_guests'], property_details['number_beds'], property_details['number_baths'], property_details['accessible'], property_details['pets_allowed'], property_details['hostusername'], picture_file)
       flash(f'Property created for {form.property_name.data}!', 'success')
       db.commit()
       return redirect(url_for('your_properties'))
@@ -349,7 +368,7 @@ def add_property():
 
 @app.route("/property/<string:propertyname>")
 def individual_property(propertyname):
-  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
   db.get_property(propertyname)
   property_rows = db.fetch_one()
   if property_rows == None:
@@ -363,7 +382,7 @@ def individual_property(propertyname):
   db.get_picture(host_username)
   host_picture = db.fetch_one()[0]
 
-  return render_template('property.html', property_map = property_map, host_picture=host_picture, host_username=host_username)
+  return render_template('property.html', property_map = property_map, host_picture=host_picture)
 
 @app.route("/<string:username>")
 def user_profile(username):
@@ -381,7 +400,7 @@ def user_profile(username):
 
 @app.route("/<string:username>/properties")
 def user_properties(username):
-  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername']
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
   properties = []
   db.get_users_properties(username)
   property_rows = db.fetch_all()
@@ -418,7 +437,7 @@ def add_payment_method():
   try: 
     if form.validate_on_submit():
       payment_method['username'] = current_user.id
-      payment_method['card_type'] = request.form.get('card_type')
+      payment_method['card_type'] = request.form.get('card_type').lower()
       payment_method['first_name'] = request.form.get('first_name')
       payment_method['last_name'] = request.form.get('last_name')
       payment_method['card_number'] = request.form.get('card_number')
@@ -426,7 +445,7 @@ def add_payment_method():
       payment_method['cvv'] = str(request.form.get('cvv'))
       payment_method['billing_country'] = request.form.get('billing_country')
       #there's a hidden 'province' field here cuz of country.js btw
-      if payment_method['billing_country'] == "-1":
+      if payment_method['billing_country'] in ["-1", None]:
         raise Exception('Please enter a country or province')
 
       db.create_payment_method(payment_method['username'], payment_method['card_type'], payment_method['first_name'], payment_method['last_name'], 

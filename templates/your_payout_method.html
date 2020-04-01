@@ -1,13 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Your Payout Methods (Amount: {{ methods|length }})</h1>
-  <a class="ml-2" href="{{ url_for('add_payout_method') }}">Add A Payout Method</a> <br>
+  <h1>Your Payout Method</h1>
+  {% if methods|length <1 %}
+    <a class="ml-2" href="{{ url_for('add_payout_method') }}">Add A Payout Method</a> <br>
+  {% endif %}
   {% for method in methods %}
-    Payout Method {{ loop.index }}
     <article class="media content-section">
       <div class="media-body">
         <div class="article-metadata">
-          <li class="list-group-item">Paypal Address: {{ method['paypal_address'] }}</li>
+          Paypal Address
+          <li class="list-group-item">{{ method['paypal_address'] }}</li>
           <br>
         </div>
       </article>

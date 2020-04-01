@@ -33,6 +33,9 @@ class RegistrationForm(FlaskForm):
     username_count = db.fetch_one()
     if username_count[0]:
       raise ValidationError("That username is taken. Please choose another username.")
+    if " " in list(username.data):
+      raise ValidationError("No whitespace in usernames.")
+
   
   def validate_phone_number(form, phone_number):
     if len(phone_number.data) > 16:
@@ -108,27 +111,30 @@ class CreateProperty(FlaskForm):
                           validators=[DataRequired(), NumberRange(min=1, max=9999)])
   property_type = StringField('Property Type (Entire, Private, or Shared)', validators=[DataRequired()])
   max_guests = IntegerField('Maximum Guests',
-                          validators=[NumberRange(min=1, max=99)])
+                          validators=[DataRequired(), NumberRange(min=1, max=99)])
   number_beds = IntegerField('Number of Beds',
-                          validators=[NumberRange(min=1, max=99)])
+                          validators=[DataRequired(), NumberRange(min=1, max=99)])
   number_baths = IntegerField('Number of Baths',
-                          validators=[NumberRange(min=1, max=99)])  
+                          validators=[DataRequired(), NumberRange(min=1, max=99)])  
   accessible = BooleanField('Accessible?')
-  pets_allowed = BooleanField('Pets Allowed?')                                              
+  pets_allowed = BooleanField('Pets Allowed?')
+  picture = FileField('Property Picture', validators=[DataRequired(), FileAllowed(['jpg', 'png'])])                                              
   submit = SubmitField('Create Property')
 
-  def validate_propertyname(self, propertyname):
-    db.valid_propertyname(propertyname.data)
+  def validate_property_name(self, property_name):
+    db.valid_propertyname(property_name.data)
     propertyname_count = db.fetch_one()
     if propertyname_count[0]:
-      raise ValidationError("That propertyname is taken. Please choose another propertyname.")
+      raise ValidationError("That property name is taken. Please choose another propertyname.")
+    if " " in list(property_name.data):
+      raise ValidationError("No whitespace in property names.")
 
-  def validate_proprty_type(form, property_type):
-    if property_type.data.lower != ('entire' or 'private' or 'shared'):
-      raise ValidationError('Invalid phone number.')
+  def validate_property_type(form, property_type):
+    if property_type.data.lower() not in ['entire', 'private', 'shared']:
+      raise ValidationError('Invalid property type.')
 
 class PaymentMethod(FlaskForm):
-  card_type = StringField('Card Type',
+  card_type = StringField('Card Type (Visa or Mastercard required)',
                           validators=[DataRequired(), Length(min=2, max=20)])
   first_name = StringField('First Name', validators=[DataRequired(), Length(min=1, max=20)])
   last_name = StringField('Last Name', validators=[DataRequired(), Length(min=1, max=20)])
@@ -139,6 +145,10 @@ class PaymentMethod(FlaskForm):
   cvv = IntegerField('cvv',
                           validators=[DataRequired(), NumberRange(min=100, max=999)])
   submit = SubmitField('Add Payment Method')
+
+  def validate_card_type(form, card_type):
+    if card_type.data.lower() not in ['visa', 'mastercard', 'shared']:
+      raise ValidationError('Invalid credit card type.')
 
 class PayoutMethod(FlaskForm):
   paypal_address = StringField('Paypal Address', validators=[DataRequired(), Email(), Length(min=7, max=40)])

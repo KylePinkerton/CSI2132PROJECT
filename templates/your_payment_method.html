@@ -1,19 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Your Payment Methods (Amount: {{ methods|length }})</h1>
-  <a class="ml-2" href="{{ url_for('add_payment_method') }}">Add A Payment Method</a> <br>
+  <h1>Your Payment Method</h1>
+  {% if methods|length <1 %}
+    <a class="ml-2" href="{{ url_for('add_payment_method') }}">Add A Payment Method</a> <br>
+  {% endif %}
   {% for method in methods %}
-    Payment Method {{ loop.index }}
     <article class="media content-section">
       <div class="media-body">
         <div class="article-metadata">
-          <li class="list-group-item">Card Type: {{ method['card_type'] }}</li>
-          <li class="list-group-item">First Name: {{ method['first_name'] }}</li>
-          <li class="list-group-item">Last Name: {{ method['last_name'] }}</li>
-          <li class="list-group-item">Card Number: {{ method['card_number'] }}</li>
-          <li class="list-group-item">Card Expiration: {{ method['card_expiration'] }}</li>
-          <li class="list-group-item">CVV: {{ method['cvv'] }}</li>
-          <li class="list-group-item">Billing Country: {{ method ['billing_country'] }}</li>
+          Card Type
+          <li class="list-group-item">{{ method['card_type'] }}</li>
+          First Name
+          <li class="list-group-item">{{ method['first_name'] }}</li>
+          Last Name
+          <li class="list-group-item">{{ method['last_name'] }}</li>
+          Card Number
+          <li class="list-group-item">{{ method['card_number'] }}</li>
+          Card Expiration
+          <li class="list-group-item">{{ method['card_expiration'] }}</li>
+          CVV
+          <li class="list-group-item">{{ method['cvv'] }}</li>
+          Billing Country
+          <li class="list-group-item">{{ method ['billing_country'] }}</li>
           <br>
         </div>
       </article>

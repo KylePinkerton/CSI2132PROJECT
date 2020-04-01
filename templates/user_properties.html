@@ -3,25 +3,38 @@
   <h1>{{ username }}'s Properties (Total: {{ properties|length }})</h1>
   {% for property in properties %}
     <article class="media content-section">
-      <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + host_picture) }}">
+      <figure class='item'>
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + host_picture) }}"> 
+        <figcaption class="caption">
+          <a class="mr-2" href="{{ url_for('user_profile', username=property['hostusername']) }}">{{ property['hostusername'] }}</a>
+        </figcaption>
+      </figure>
       <div class="media-body">
         <div class="article-metadata">
-          <a class="mr-2" href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">{{ property['propertyname'] }}</a>
-          <li class="list-group-item">Country: {{ property['country'] }}</li>
-          <li class="list-group-item">Province: {{ property['province'] }}</li>
-          <li class="list-group-item">Rent Rate: {{ property['rent_rate'] }}</li>
-          <li class="list-group-item">Type: {{ property['type'] }}</li>
-          <li class="list-group-item">Max Guests: {{ property['max_guests'] }}</li>
-          <li class="list-group-item">Number of Beds: {{ property['number_beds'] }}</li>
-          <li class="list-group-item">Number of Baths: {{ property['number_baths'] }}</li>
-          <li class="list-group-item">Accessible: {{ property['accesible'] }}</li>
-          <li class="list-group-item">Pets Allowed: {{ property['pets_allowed'] }}</li>
-          <br>
-          Address Information:
-          <li class="list-group-item">Street Number: {{ property['street_number'] }}</li>
-          <li class="list-group-item">Street Name: {{ property['street_name'] }}</li>
-          <li class="list-group-item">Apartment Number: {{ property['apt_number'] }}</li>
-          <li class="list-group-item">Postal Code: {{ property['postal_code'] }}</li>
+          <a href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">
+            <h3 align='center'>{{ property['propertyname'] }}</h3>
+          </a> 
+          <div>
+            <img class="img-fluid" alt="Responsive image" src="{{ url_for('static', filename='images/' + property['picture']) }}">
+          </div>
+          <div>
+            <h4 align='center'> Property Information </h4>
+            <li class="list-group-item">Country: {{ property['country'] }}</li>
+            <li class="list-group-item">Province: {{ property['province'] }}</li>
+            <li class="list-group-item">Rent Rate: {{ property['rent_rate'] }}</li>
+            <li class="list-group-item">Type: {{ property['type'] }}</li>
+            <li class="list-group-item">Max Guests: {{ property['max_guests'] }}</li>
+            <li class="list-group-item">Number of Beds: {{ property['number_beds'] }}</li>
+            <li class="list-group-item">Number of Baths: {{ property['number_baths'] }}</li>
+            <li class="list-group-item">Accessible: {{ property['accesible'] }}</li>
+            <li class="list-group-item">Pets Allowed: {{ property['pets_allowed'] }}</li>
+            <br>
+            <h4 align='center'> Address Information </h4>
+            <li class="list-group-item">Street Number: {{ property['street_number'] }}</li>
+            <li class="list-group-item">Street Name: {{ property['street_name'] }}</li>
+            <li class="list-group-item">Apartment Number: {{ property['apt_number'] }}</li>
+            <li class="list-group-item">Postal Code: {{ property['postal_code'] }}</li>
+          </div>
         </div>
       </article>
     {% endfor %}

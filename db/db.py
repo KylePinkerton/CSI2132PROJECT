@@ -73,7 +73,7 @@ class DB:
     self.cursor.execute(f"""INSERT INTO person (username, first_name, middle_name, last_name, password, street_number, street_name, apt_number,
                          postal_code, date_of_birth, country, province) VALUES ('{username}', '{first_name}', '{middle_name}', '{last_name}', '{password}', '{street_number}', '{street_name}', '{apt_number}',
                          '{postal_code}', '{date_of_birth}', '{country}', '{province}')""")
-    self.cursor.execute(f"""INSERT INTO users (username, join_date, verified, about, languages, work, profile_picture) VALUES ('{username}', '{join_date}', 'false', 'about me', 'English', 'null', 'default.png')""")
+    self.cursor.execute(f"""INSERT INTO users (username, join_date, verified, about, languages, work, profile_picture) VALUES ('{username}', '{join_date}', 'false', 'N/A', 'English', 'N/A', 'default.png')""")
     self.cursor.execute(f"insert into person_phone_number (username, phone_number) VALUES ('{username}', '{phone_number}')")
     self.cursor.execute(f"insert into person_email_address (username, email_address) VALUES ('{username}', '{email}')")
   
@@ -113,7 +113,7 @@ class DB:
   
   #property
   def get_homepage_properties(self):
-      self.cursor.execute(f"select * from property")
+      self.cursor.execute(f"select * from property order by random() limit 10")
 
   def get_property(self, propertyname):
       self.cursor.execute(f"select * from property where propertyname='{propertyname}'")
@@ -124,8 +124,8 @@ class DB:
   def valid_propertyname(self, propertyname):
     self.cursor.execute(f"select count(propertyname) from property where propertyname='{propertyname}'")
 
-  def create_property(self, property_name, street_number, street_name, apt_number, postal_code, rent_rate, country, province, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, current_user_id):
-    self.cursor.execute(f"insert into property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, type, max_guests, number_beds, number_baths, accesible, pets_allowed, country, hostusername) VALUES ('{property_name}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{current_user_id}')")
+  def create_property(self, property_name, street_number, street_name, apt_number, postal_code, rent_rate, country, province, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, current_user_id, picture):
+    self.cursor.execute(f"insert into property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, country, hostusername, picture) VALUES ('{property_name}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{current_user_id}', '{picture}')")
 
   #payment_method
   def get_users_payment_methods(self, username):

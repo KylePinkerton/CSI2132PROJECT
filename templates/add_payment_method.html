@@ -86,10 +86,10 @@
       </fieldset>
       <div style='text-align:center;'>
         <script type= "text/javascript" src = "../static/js/countries.js"></script>
-        Select Country:   <select id="country" name ="country"></select> </br></br>
+        Select Country:   <select id="billing_country" name ="billing_country"></select> </br></br>
       </div>
       <script language="javascript">
-        populateCountries("country"); // first parameter is id of country drop-down and second parameter is id of state drop-down
+        populateCountries("billing_country"); // first parameter is id of country drop-down and second parameter is id of state drop-down
       </script>
       <div class="form-group">
         {{ form.submit(class="btn btn-outline-info") }}
