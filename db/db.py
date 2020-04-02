@@ -38,6 +38,15 @@ class DB:
     
     return (True, "Successful Sign in")
 
+  #admin
+  def check_admin(self, username):
+    self.cursor.execute(f"select count(username) from admins where username='{username}'")
+
+  #employee
+  def check_employee(self, username):
+    self.cursor.execute(f"select count(username) from employees where username='{username}'")
+
+  #person
   def valid_username(self, username):
     self.cursor.execute(f"select count(username) from person where username='{username}'")
 

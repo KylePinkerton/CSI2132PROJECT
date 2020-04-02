@@ -72,6 +72,20 @@ def user_loader(username):
     user.work = db.fetch_one()[0]
     db.get_picture(username)
     user.picture = db.fetch_one()[0]
+    #check if admin
+    db.check_admin(username)
+    admin_count = db.fetch_one() 
+    if admin_count[0]:
+      user.admin = True
+    else:
+      user.admin = False
+    #check employee
+    db.check_employee(username)
+    employee_count = db.fetch_one()
+    if employee_count[0]:
+      user.employee = True
+    else:
+      user.employee = False
     return user
   return
 
