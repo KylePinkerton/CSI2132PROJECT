@@ -1,10 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-  {% if current_user.is_authenticated %}
-    <h4>{{ current_user.id }}, are you ready for a getaway? </h4>
-  {% else %}
-    <h4>Register to book some of these amazing stays! </h4>
-  {% endif %}
+<h5>Total results: {{ properties|length }}</h1>
   {% for property in properties %}
     <article class="media content-section">
       <figure class='item'>

@@ -3,8 +3,8 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates
-from flask_login import LoginManager, login_required, current_user, logout_user
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates, SearchProperty
+from flask_login import LoginManager, login_required, current_user, logout_user 
 from flask_login import UserMixin, login_user
 import secrets
 import os
@@ -93,8 +93,62 @@ def index():
     db.get_picture(prop['hostusername'])
     picture = db.fetch_one()[0]
     prop['profile_picture'] = picture
-
+  
   return render_template("homepage.html", properties=properties)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+  property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
+  form = SearchProperty()
+  property_details = {}
+
+  if form.validate_on_submit():
+    try: 
+      property_details['hostusername'] = request.form.get('hostusername', default='null')
+      property_details['propertyname'] = request.form.get('propertyname', default='null')
+      property_details['rent_rate'] = request.form.get('rent_rate', default='-1')
+      property_details['country'] = request.form.get('country', default='null')
+      property_details['province'] = request.form.get('province', default='null')
+      property_details['property_type'] = request.form.get('property_type', default='null').lower()
+      property_details['max_guests'] = request.form.get('max_guests', default='-1')
+      property_details['number_beds'] = request.form.get('number_beds', default='-1')
+      property_details['number_baths'] = request.form.get('number_baths', default='-1')
+      property_details['accessible'] = request.form.get('accessible', default='null')
+      property_details['pets_allowed'] = request.form.get('pets_allowed', default='null')
+      #deal with weird cases for optional (can be null) arguments
+      for key in property_details:
+        print(key)
+        if property_details[key] in ['null', '-1', 'None', ""]:
+          property_details[key] = key
+        else:
+          property_details[key] = "'" + str(property_details[key]) + "'"
+
+      print(property_details)
+      properties = []
+      db.get_search_properties(property_details['hostusername'], property_details['propertyname'], property_details['rent_rate'], property_details['country'], property_details['province'], property_details['property_type'], property_details['max_guests'], property_details['number_beds'], property_details['number_baths'], property_details['accessible'], property_details['pets_allowed'])
+      property_rows = db.fetch_all()
+      print('yo')
+      for row in property_rows:
+        property_map = {}
+        for k in range(len(property_columns)):
+          property_map[property_columns[k]] = row[k]
+        
+        properties.append(property_map)
+      print('yo')
+      for prop in properties:
+        db.get_picture(prop['hostusername'])
+        picture = db.fetch_one()[0]
+        prop['profile_picture'] = picture
+      
+      flash('Successful search. Here are your results:', 'success')
+      return render_template("search_results.html", properties=properties)
+
+    except Exception as e:
+      print(e)
+      flash('Opps, something went wrong. Try again.', 'danger')
+
+  return render_template("search.html", form=form)
 
 @app.route('/log_in', methods=['GET', 'POST'])
 def log_in():

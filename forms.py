@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField, SelectField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Regexp, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Regexp, ValidationError, Optional
 from db import db
 import phonenumbers
 
@@ -160,3 +160,14 @@ class AvailableDates(FlaskForm):
   dummy = DateField('Dummy')
   submit = SubmitField('Check Availability')
 
+class SearchProperty(FlaskForm):
+  propertyname = StringField('Property Name', validators=[Optional()])
+  hostusername = StringField('Host username', validators=[Optional()])
+  rent_rate = IntegerField('Rent Rate (Per Night)', validators=[Optional()])
+  property_type = StringField('Property Type (Entire, Private, or Shared)', validators=[Optional()])
+  max_guests = IntegerField('Maximum Guests', validators=[Optional()])
+  number_beds = IntegerField('Number of Beds', validators=[Optional()])
+  number_baths = IntegerField('Number of Baths', validators=[Optional()])
+  accessible = BooleanField('Accessible?', validators=[Optional()])
+  pets_allowed = BooleanField('Pets Allowed?', validators=[Optional()])
+  submit = SubmitField('Search for property!', validators=[Optional()])
