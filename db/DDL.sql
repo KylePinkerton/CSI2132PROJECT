@@ -146,8 +146,8 @@ ALTER TABLE project.property
 CREATE TABLE project.property_taken_dates
 (
     propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    available_date date NOT NULL,
-    CONSTRAINT property_taken_dates_pkey PRIMARY KEY (propertyname, available_date),
+    taken_date date NOT NULL,
+    CONSTRAINT property_taken_dates_pkey PRIMARY KEY (propertyname, taken_date),
     CONSTRAINT property_taken_dates_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION

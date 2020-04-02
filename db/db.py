@@ -141,6 +141,25 @@ class DB:
   def create_payout_method(self, username, paypal_address):
     self.cursor.execute(f"insert into payout_method (username, paypal_address) VALUES ('{username}', '{paypal_address}')")
 
+  #property_taken_dates
+  def check_dates(self, propertyname, dates):
+    taken_dates = []
+    for date in dates:
+      date_string = date.strftime('%Y-%m-%d')
+      try:
+        self.cursor.execute(f"select * from property_taken_dates where propertyname='{propertyname}' and taken_date='{date_string}'")
+        if len(self.cursor.fetchall()) == 0:
+          continue
+        taken_dates.append(date)
+
+      except Exception as e: 
+        print(e)
+        raise Exception('Something bad happened when checking the dates...')
+    
+    return taken_dates
+
+
+
 connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
 db = DB(connection)
 

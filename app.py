@@ -8,7 +8,7 @@ from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
 import os
-from datetime import date
+import datetime
 
 app = Flask(__name__)
 app.debug = True
@@ -395,8 +395,8 @@ def individual_property(propertyname):
 
       start_month, start_day, start_year = [int(x) for x in str(available_dates['start_date']).split('/')] 
       end_month, end_day, end_year = [int(x) for x in str(available_dates['end_date']).split('/')] 
-      start_date = date(start_year, start_month, start_day)
-      end_date = date(end_year, end_month, end_day)
+      start_date = datetime.date(start_year, start_month, start_day)
+      end_date = datetime.date(end_year, end_month, end_day)
 
       if start_date > end_date:
         raise Exception("Start date cannot be greater than end date!")
@@ -405,12 +405,26 @@ def individual_property(propertyname):
       if date_difference.days > 13: 
         raise Exception("You can only stay at one property for a maximum of 14 days!")
 
+      delta = datetime.timedelta(days=1)
+      dates = []
+
+      while start_date <= end_date:
+        dates.append(start_date)
+        start_date += delta
       
+      taken_dates = db.check_dates(property_map['propertyname'], dates)
+
+      if len(taken_dates) == 0:
+        flash('The property is available during those dates!', 'success')
+
+      else:
+        error_message = ""
+        for date in taken_dates:
+          error_message += date.strftime('%Y-%m-%d') + ", "
+        flash('Sorry, the property is not available on the following dates: ' + error_message , 'danger')
 
     except Exception as e: 
-      print(e)
       flash('Error: ' + str(e), 'danger')
-      return render_template('property.html', property_map = property_map, host_picture=host_picture, form=form)
 
   return render_template('property.html', property_map = property_map, host_picture=host_picture, form=form)
 
