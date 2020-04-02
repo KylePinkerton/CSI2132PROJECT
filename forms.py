@@ -155,3 +155,8 @@ class PayoutMethod(FlaskForm):
   submit = SubmitField('Add Payout Method')
  
 
+class AvailableDates(FlaskForm):
+  #dummy field to let us use wtforms with js calender
+  dummy = DateField('Dummy')
+  submit = SubmitField('Check Availability')
+

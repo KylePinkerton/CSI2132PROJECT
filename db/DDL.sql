@@ -139,16 +139,16 @@ ALTER TABLE project.property
 
 ------------------------------------------------
 
--- Table: project.property_available_dates
+-- Table: project.property_taken_dates
 
--- DROP TABLE project.property_available_dates;
+-- DROP TABLE project.property_taken_dates;
 
-CREATE TABLE project.property_available_dates
+CREATE TABLE project.property_taken_dates
 (
     propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
     available_date date NOT NULL,
-    CONSTRAINT property_available_dates_pkey PRIMARY KEY (propertyname, available_date),
-    CONSTRAINT property_available_dates_propertyname_fkey FOREIGN KEY (propertyname)
+    CONSTRAINT property_taken_dates_pkey PRIMARY KEY (propertyname, available_date),
+    CONSTRAINT property_taken_dates_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
@@ -158,7 +158,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE project.property_available_dates
+ALTER TABLE project.property_taken_dates
     OWNER to kpink074;
 
 ------------------------------------------------

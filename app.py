@@ -3,11 +3,12 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_login import UserMixin, login_user
 import secrets
 import os
+from datetime import date
 
 app = Flask(__name__)
 app.debug = True
@@ -165,7 +166,7 @@ def register():
       return redirect(url_for('index'))
   except Exception as e:
     print(e)
-    flash('Error ' + str(e), 'danger')
+    flash('Error: ' + str(e), 'danger')
     return render_template('register.html', title='Register', form=form)
   return render_template('register.html', title='Register', form=form)
 
@@ -366,7 +367,7 @@ def add_property():
     return render_template('add_property.html', title='Add Property', form=form)
   return render_template('add_property.html', title='Add Property', form=form)
 
-@app.route("/property/<string:propertyname>")
+@app.route("/property/<string:propertyname>", methods=['GET', 'POST'])
 def individual_property(propertyname):
   property_columns = ['propertyname', 'street_number', 'street_name', 'apt_number', 'province', 'postal_code', 'rent_rate', 'type', 'max_guests', 'number_beds', 'number_baths', 'accesible', 'pets_allowed', 'country', 'hostusername', 'picture']
   db.get_property(propertyname)
@@ -381,8 +382,37 @@ def individual_property(propertyname):
   host_username = property_map['hostusername']
   db.get_picture(host_username)
   host_picture = db.fetch_one()[0]
+  form = AvailableDates()
+  if request.method == 'POST':
+    try:
+      available_dates = {}
+      available_dates['start_date'] = request.form.get('start_date')
+      available_dates['end_date'] = request.form.get('end_date')
+      if available_dates['start_date'] in [None, ""]:
+        raise Exception("Please choose a Start Date")
+      if available_dates['end_date'] in [None, ""]:
+        raise Exception("Please choose an End Date")
 
-  return render_template('property.html', property_map = property_map, host_picture=host_picture)
+      start_month, start_day, start_year = [int(x) for x in str(available_dates['start_date']).split('/')] 
+      end_month, end_day, end_year = [int(x) for x in str(available_dates['end_date']).split('/')] 
+      start_date = date(start_year, start_month, start_day)
+      end_date = date(end_year, end_month, end_day)
+
+      if start_date > end_date:
+        raise Exception("Start date cannot be greater than end date!")
+
+      date_difference = end_date - start_date
+      if date_difference.days > 13: 
+        raise Exception("You can only stay at one property for a maximum of 14 days!")
+
+      
+
+    except Exception as e: 
+      print(e)
+      flash('Error: ' + str(e), 'danger')
+      return render_template('property.html', property_map = property_map, host_picture=host_picture, form=form)
+
+  return render_template('property.html', property_map = property_map, host_picture=host_picture, form=form)
 
 @app.route("/<string:username>")
 def user_profile(username):
