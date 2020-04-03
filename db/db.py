@@ -114,6 +114,9 @@ class DB:
   def get_user(self, username):
     self.cursor.execute(f"select * from users where username='{username}'")
 
+  def get_total_users(self):
+    self.cursor.execute(f"select count(username) from users where username=username")
+
   def get_join_date(self, username):
     self.cursor.execute(f"select join_date from users where username='{username}'")
   
@@ -147,6 +150,9 @@ class DB:
   #property
   def get_homepage_properties(self):
       self.cursor.execute(f"select * from property order by random() limit 20")
+
+  def get_total_properties(self):
+    self.cursor.execute(f"select count(propertyname) from property where propertyname=propertyname")
 
   def get_property(self, propertyname):
       self.cursor.execute(f"select * from property where propertyname='{propertyname}'")
@@ -195,6 +201,15 @@ class DB:
     
     return taken_dates
 
+  #rental_agreement
+  def get_total_completed_stays(self):
+    current_date = datetime.today().strftime('%Y-%m-%d')
+    self.cursor.execute(f"select count(rental_id) from rental_agreement where host_accepted='true' and end_date<='{current_date}'")
+
+  #branches
+  def get_total_countrys(self):
+    self.cursor.execute(f"select count(country) from branches where country=country")
+  
 db = DB(dbname, user, password, host, port, schema)
 db.new_connection()
 

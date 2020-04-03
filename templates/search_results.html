@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<h5>Total results: {{ properties|length }}</h1>
+<h1>Total results: {{ properties|length }}</h1>
+{% if properties|length >=20 %}
+  <h4>Showing the top 20 results </h4>
+{% else %} 
+   <h4>Showing the top {{ properties|length }} results </h4>
+{% endif %}
   {% for property in properties %}
     <article class="media content-section">
       <figure class='item'>

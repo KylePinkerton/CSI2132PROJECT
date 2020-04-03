@@ -11,6 +11,18 @@ import os
 import datetime
 
 app = Flask(__name__)
+@app.context_processor
+def inject_stats():
+  db.get_total_users()
+  total_users = db.fetch_one()[0]
+  db.get_total_properties()
+  total_properties = db.fetch_one()[0]
+  db.get_total_completed_stays()
+  total_completed_stays = db.fetch_one()[0]
+  db.get_total_countrys()
+  total_countrys = db.fetch_one()[0]
+  return dict(total_users=total_users, total_properties=total_properties, total_completed_stays=total_completed_stays, total_countrys=total_countrys)
+
 app.debug = True
 app.config['SECRET_KEY'] = 'f7db6a2ebd1d01417597c005cb404b63'
 login_manager = LoginManager(app)
