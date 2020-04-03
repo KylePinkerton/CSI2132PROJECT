@@ -9,6 +9,7 @@ import aiohttp
 import asyncio
 import secrets
 import time
+import traceback
 
 fake = Faker()
 salaries = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000]
@@ -779,7 +780,7 @@ def create_rest():
           continue
       #5 people per country
       employees_in_country = []
-      for person_from_country in range(5):
+      for person_from_country in range(10):
         province_choices = s_a[i + 1]
         province = random.choice(province_choices).replace("'", "-")
         while len(province) > 20:
@@ -894,12 +895,139 @@ def create_rest():
           #admins 
           if is_admin:
             db.raw_query(f"""INSERT INTO admins (username) VALUES ('{username}')""")
+        ########### property creation ###########
+        number_properties = random.randint(1,3)
+        if work != "AirBnB Employee":
+          for create_propety in range(number_properties):
+            random_int = random.randint(1,12)
+            if random_int == 1:
+              propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 99))
+            elif random_int == 2:
+              propertyname =  str(random.randint(1, 99)) + fake.company() + str(random.randint(1, 99))
+            elif random_int == 3:
+              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 99))
+            elif random_int == 4:
+              propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+            elif random_int == 5:
+              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99))
+            elif random_int == 6:
+              propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+            elif random_int == 7:
+              propertyname = fake.company() + fake.street_name() + str(random.randint(1, 99))
+            elif random_int == 8:
+              propertyname = str(random.randint(1, 99)) + fake.company() + fake.street_name()
+            elif random_int == 9:
+              propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 99))
+            elif random_int == 10:
+              propertyname = fake.company() + str(random.randint(1, 99)) + fake.street_name()
+            elif random_int == 11:
+              propertyname = str(random.randint(1, 99)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+            else:
+              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99)) + fake.company()
+
+            while len(propertyname) > 20:
+              random_int = random.randint(1,12)
+              if random_int == 1:
+                propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 99))
+              elif random_int == 2:
+                propertyname =  str(random.randint(1, 99)) + fake.company() + str(random.randint(1, 99))
+              elif random_int == 3:
+                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 99))
+              elif random_int == 4:
+                propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              elif random_int == 5:
+                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99))
+              elif random_int == 6:
+                propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              elif random_int == 7:
+                propertyname = fake.company() + fake.street_name() + str(random.randint(1, 99))
+              elif random_int == 8:
+                propertyname = str(random.randint(1, 99)) + fake.company() + fake.street_name()
+              elif random_int == 9:
+                propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 99))
+              elif random_int == 10:
+                propertyname = fake.company() + str(random.randint(1, 99)) + fake.street_name()
+              elif random_int == 11:
+                propertyname = str(random.randint(1, 99)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              else:
+                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99)) + fake.company()
+
+            propertyname = propertyname.replace(' ', '-')
+            street_number = random.randint(1, 999)
+            street_name = fake.street_name().replace("'", "-")
+            while len(street_name) > 20:
+              street_name = fake.street_name().replace("'", "-")
+
+            #apt_number can be null
+            apt_numbers = [x for x in range(1, 999)]
+            apt_numbers.append("NaN")
+            apt_number = random.choice(apt_numbers)
+
+            postal_code = ""
+            for i in range(3):
+              postal_code += random.choice(alphabet)
+              postal_code += str(random.randint(1, 9))
+            
+            rent_rate = (round(random.randint(50, 9999)/5)*5)
+            property_type = random.choice(['entire', 'private', 'shared'])
+            number_beds = random.randint(1, 10)
+            number_baths = random.randint(1, 10)
+            if number_beds < 2:
+              max_guests = random.randint(1, 2)
+            elif number_beds < 4:
+              max_guests = random.randint(3, 5)
+            elif number_beds < 6: 
+              max_guests = random.randint(5, 8)
+            elif number_beds <= 8: 
+              max_guests = random.randint(8, 14)
+            elif number_beds <= 10:
+              max_guests = random.randint(10, 20)
+
+            accessible = random.choice(['true', 'false'])
+            pets_allowed = random.choice(['true', 'false'])
+
+            random_int = random.randint(1, 13)
+            if random_int == 1:
+              r = requests.get('https://source.unsplash.com/random/?house')
+            elif random_int == 2:
+              r = requests.get('https://source.unsplash.com/random/?vacation')
+            elif random_int == 3:
+              r = requests.get('https://source.unsplash.com/random/?airbnb')
+            elif random_int == 4:
+              r = requests.get('https://source.unsplash.com/random/?hotel')
+            elif random_int == 5:
+              r = requests.get('https://source.unsplash.com/random/?apartment')
+            elif random_int == 6:
+              r = requests.get('https://source.unsplash.com/random/?dwelling')
+            elif random_int == 7:
+              r = requests.get('https://source.unsplash.com/random/?home')
+            elif random_int == 8:
+              r = requests.get('https://source.unsplash.com/random/?lodge')
+            elif random_int == 9:
+              r = requests.get('https://source.unsplash.com/random/?houseboat')
+            elif random_int == 10:
+              r = requests.get('https://source.unsplash.com/random/?inn')
+            elif random_int == 11:
+              r = requests.get('https://source.unsplash.com/random/?retreat')
+            elif random_int == 12:
+              r = requests.get('https://source.unsplash.com/random/?bed')
+            elif random_int == 13:
+              r = requests.get('https://source.unsplash.com/random/?room')
+
+            random_name = secrets.token_hex(6)
+            urllib.request.urlretrieve(r.url, "../static/images/" + random_name + ".png")
+            picture = random_name + ".png"
+            hostusername=username
+
+            db.raw_query(f""" INSERT INTO property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, country, hostusername, picture) VALUES ('{propertyname}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{hostusername}', '{picture}')  """)
 
         
   except Exception as e:
     db.close()
     db.new_connection()
     print(e)
+    traceback.print_exc()
+
 
   db.commit()
       
