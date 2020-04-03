@@ -271,33 +271,6 @@ ALTER TABLE project.rental_agreement
 
 ------------------------------------------------
 
--- Table: project.admins
-
--- DROP TABLE project.admins;
-
-CREATE TABLE project.admins
-(
-    username character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT admins_pkey PRIMARY KEY (username),
-    CONSTRAINT admins_username2_fkey FOREIGN KEY (username)
-        REFERENCES project.employees (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    CONSTRAINT admins_username_fkey FOREIGN KEY (username)
-        REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE project.admins
-    OWNER to kpink074;
-
-------------------------------------------------
-
 -- Table: project.employees
 
 -- DROP TABLE project.employees;
@@ -330,6 +303,33 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE project.employees
+    OWNER to kpink074;
+
+------------------------------------------------
+
+-- Table: project.admins
+
+-- DROP TABLE project.admins;
+
+CREATE TABLE project.admins
+(
+    username character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT admins_pkey PRIMARY KEY (username),
+    CONSTRAINT admins_username2_fkey FOREIGN KEY (username)
+        REFERENCES project.employees (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT admins_username_fkey FOREIGN KEY (username)
+        REFERENCES project.person (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE project.admins
     OWNER to kpink074;
 
 ------------------------------------------------

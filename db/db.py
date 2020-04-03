@@ -209,6 +209,9 @@ class DB:
   #branches
   def get_total_countrys(self):
     self.cursor.execute(f"select count(country) from branches where country=country")
+
+  def valid_country(self, country):
+    self.cursor.execute(f"select count(country) from person where country='{country}'")
   
 db = DB(dbname, user, password, host, port, schema)
 db.new_connection()
