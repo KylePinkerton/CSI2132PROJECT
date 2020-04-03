@@ -780,7 +780,7 @@ def create_rest():
           continue
       #5 people per country
       employees_in_country = []
-      for person_from_country in range(10):
+      for person_from_country in range(5):
         province_choices = s_a[i + 1]
         province = random.choice(province_choices).replace("'", "-")
         while len(province) > 20:
@@ -1021,7 +1021,29 @@ def create_rest():
 
             db.raw_query(f""" INSERT INTO property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, country, hostusername, picture) VALUES ('{propertyname}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{hostusername}', '{picture}')  """)
 
+        ########payment method###########
+        random_int = random.randint(1,2)
+        if random_int == 1:
+          card_type = random.choice(['mastercard', 'visa'])
+          card_number = fake.credit_card_number()
+          card_expiration = fake.date_between(start_date='+60d', end_date='+2y').strftime('%Y-%m-%d')
+          cvv = random.randint(100, 999)
+          db.raw_query(f""" INSERT INTO payment_method (username, card_type, first_name, last_name, card_number, card_expiration, cvv, billing_country) VALUES ('{username}', '{card_type}', '{first_name}', '{last_name}', '{card_number}', '{card_expiration}', '{cvv}', '{country}')  """)
         
+        #######payout method#########
+        random_int = random.randint(1,2)
+        if random_int == 1:
+          fake_paypal = fake.email()
+          index_1 = fake_paypal.find("@") + 1
+          paypal_address = fake_paypal[:index_1] + "paypal" + ".com"
+          while len(paypal_address) > 20: 
+            fake_paypal = fake.email()
+            index_1 = fake_paypal.find("@") + 1
+            paypal_address = fake_paypal[:index_1] + "paypal" + ".com"
+
+          db.raw_query(f""" INSERT INTO payout_method (username, paypal_address) VALUES ('{username}', '{paypal_address}')  """)
+          
+
   except Exception as e:
     db.close()
     db.new_connection()
