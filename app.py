@@ -232,6 +232,10 @@ def register():
       account_details['email'] = request.form.get('email')
       account_details['phone_number'] = request.form.get('phone_number')
       #deal with weird cases for optional (can be null) arguments
+      db.valid_country(account_details['country'])
+      country_count = db.fetch_one()
+      if not country_count[0]:
+        raise Exception('Sorry, we are not operating in that country yet!')
       if account_details['middle_name'] == "":
         account_details['middle_name'] = "NULL"
       if account_details['apt_number'] == "":
@@ -554,7 +558,7 @@ def shutdown():
           raise RuntimeError('Not running with the Werkzeug Server')
       func()
     shutdown_server()
-    db.connection.close()
+    db.close()
     return "Server shutting down..."
 
 @app.route("/addpaymentmethod", methods=["GET", "POST"])
