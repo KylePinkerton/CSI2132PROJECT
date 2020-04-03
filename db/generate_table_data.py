@@ -8,9 +8,11 @@ import urllib.request
 import aiohttp
 import asyncio
 import secrets
+import time
 
 fake = Faker()
-
+salaries = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000]
+titles = ["Electrician", "Renovation Worker", "Housekeeping Worker", "Plumber", "Gardener"]
 language_choices = ['Achinese', 'Acoli', 'Adangme', 'Adyghe', 'Afar', 'Afrihili', 'Afrikaans', 'Aghem', 'Ainu', 'Akan', 'Akkadian', 'Akoose', 'Alabama', 'Albanian', 'Aleut', 'Amarik', 'Angika', 'Arabik', 'Aragonese', 'Aramaic', 'Araona', 'Arapaho', 'Arawak', 'Armenian', 'Aromanian', 'Arpitan', 'Assamese', 'Asturian', 'Asu', 'Atsam', 'Avaric', 'Avestan', 'Awadhi', 'Aymara', 'Azerbaijani', 'Badaga', 'Bafia', 'Bafut', 'Bakhtiari', 'Balinese', 'Baluchi', 'Bambara', 'Bamun', 'Banjar', 'Basaa', 'Bashkir', 'Basque', 'Bavarian', 'Beja', 'Bemba', 'Bena', 'Betawi', 'Bhojpuri', 'Bikol', 'Bini', 'Bishnupriya', 'Bislama', 'Blin', 'Blissymbols', 'Bodo', 'Bosnian', 'Brahui', 'Braj', 'Breton', 'Buginese', 'Bulu', 'Buriat', 'Caddo', 'Cantonese', 'Capiznon', 'Carib', 'Catalan', 'Cayuga', 'Cebuano', 'Chagatai', 'Chamorro', 'Chechen', 'Cherokee', 'Cheyenne', 'Chibcha', 'Chiga', 'Chipewyan', 'Choctaw', 'Chuukese', 'Chuvash', 'Colognian', 'Comorian', 'Coptic', 'Cornish', 'Corsican', 'Cree', 'Creek', 'Croatian', 'Dakota', 'Danish', 'Dargwa', 'Dazaga', 'Delaware', 'Dinka', 'Divehi', 'Dogri', 'Dogrib', 'Duala', 'Dyula', 'Dzongkha', 'Efik', 'Ekajuk', 'Elamite', 'Embu', 'Emilian', 'Erzya', 'Esperanto', 'Estonian', 'Ewe', 'Ewondo', 'Extremaduran', 'Fang', 'Fanti', 'Faroese', 'Fijian', 'Filipino', 'Finnish', 'Flemish', 'Fon', 'Frafra', 'Friulian', 'Fulah', 'Ga', 'Gagauz', 'Galician', 'Ganda', 'Gayo', 'Gbaya', 'Geez', 'Georgian', 'Ghomala', 'Gilaki', 'Gilbertese', 'Gondi', 'Gorontalo', 'Gothic', 'Grebo', 'Guarani', 'Gujarati', 'Gusii', 'Gyaaman', 'Haida', 'Haitian', 'Hausa', 'Hawaiian', 'Hebrew', 'Herero', 'Hiligaynon', 'Hindi', 'Hittite', 'Hmong', 'Hupa', 'Iban', 'Ibibio', 'Icelandic', 'Ido', 'Igbo', 'Iloko', 'Ingrian', 'Ingush', 'Interlingua', 'Interlingue', 'Inuktitut', 'Inupiaq', 'Irish', 'Jju', 'Jutish', 'Kabardian', 'Kabuverdianu', 'Kabyle', 'Kachin', 'Kaingang', 'Kako', 'Kalaallisut', 'Kalenjin', 'Kalmyk', 'Kamba', 'Kanembu', 'Kannada', 'Kanuri', 'Karelian', 'Kashmiri', 'Kashubian', 'Kawi', 'Kazakh', 'Kenyang', 'Khasi', 'Khotanese', 'Khowar', 'Kikuyu', 'Kimbundu', 'Kirmanjki', 'Klingon', 'Kom', 'Komi', 'Kongo', 'Konkani', 'Koro', 'Kosraean', 'Kotava', 'Kpelle', 'Krio', 'Kuanyama', 'Kumyk', 'Kurdish', 'Kurukh', 'Kutenai', 'Kwasio', 'Kyrgyz', 'Ladino', 'Lahnda', 'Lakota', 'Lamba', 'Langi', 'Lao', 'Latgalian', 'Latin', 'Latvian', 'Laz', 'Lezghian', 'Ligurian', 'Limburgish', 'Lingala', 'Lithuanian', 'Livonian', 'Lojban', 'Lombard', 'Lozi', 'Luiseno', 'Lunda', 'Luo', 'Luxembourgish', 'Luyia', 'Maba', 'Macedonian', 'Machame', 'Madurese', 'Mafa', 'Magahi', 'Maithili', 'Makasar', 'Makonde', 'Malagasy', 'Malayalam', 'Maltese', 'Manchu', 'Mandar', 'Mandingo', 'Manipuri', 'Manx', 'Maori', 'Mapuche', 'Marathi', 'Mari', 'Marshallese', 'Marwari', 'Masai', 'Mazanderani', 'Medumba', 'Mende', 'Mentawai', 'Meru', 'Micmac', 'Minangkabau', 'Mingrelian', 'Mirandese', 'Mizo', 'Mohawk', 'Moksha', 'Moldavian', 'Mongo', 'Mongolian', 'Morisyen', 'Mossi', 'Mundang', 'Myene', 'Nama', 'Nauru', 'Navajo', 'Ndonga', 'Neapolitan', 'Newari', 'Ngambay', 'Ngiemboon', 'Ngomba', 'Nheengatu', 'Nias', 'Niuean', 'Nogai', 'Norwegian', 'Novial', 'Nuer', 'Nyamwezi', 'Nyanja', 'Nyankole', 'Nyoro', 'Nzima', 'Occitan', 'Ojibwa', 'Oriya', 'Oromo', 'Osage', 'Ossetic', 'Pahlavi', 'Palauan', 'Pali', 'Pampanga', 'Pangasinan', 'Papiamento', 'Pashto', 'Phoenician', 'Picard', 'Piedmontese', 'Plautdietsch', 'Pohnpeian', 'Pontic', 'Prussian', 'Quechua', 'Rajasthani', 'Rapanui', 'Rarotongan', 'Riffian', 'Romagnol', 'Romansh', 'Romany', 'Rombo', 'Root', 'Rotuman', 'Roviana', 'Rundi', 'Rusyn', 'Rwa', 'Saho', 'Sakha', 'Samburu', 'Samoan', 'Samogitian', 'Sandawe', 'Sango', 'Sangu', 'Sanskrit', 'Santali', 'Sardinian', 'Sasak', 'Saurashtra', 'Scots', 'Selayar', 'Selkup', 'Sena', 'Seneca', 'Serbian', 'Serer', 'Seri', 'Shambala', 'Shan', 'Shona', 'Sicilian', 'Sidamo', 'Siksika', 'Silesian', 'Sindhi', 'Sinhala', 'Slave', 'Slovak', 'Slovenian', 'Soga', 'Sogdien', 'Soninke', 'Sukuma', 'Sumerian', 'Sundanese', 'Susu', 'Swahili', 'Swati', 'Syriac', 'Tachelhit', 'Tagalog', 'Tahitian', 'Taita', 'Tajik', 'Talysh', 'Tamashek', 'Taroko', 'Tasawaq', 'Tatar', 'Telugu', 'Tereno', 'Teso', 'Tetum', 'Tibetan', 'Tigre', 'Tigrinya', 'Timne', 'Tiv', 'Tlingit', 'Tokelau', 'Tongan', 'Tsakhur', 'Tsakonian', 'Tsimshian', 'Tsonga', 'Tswana', 'Tulu', 'Tumbuka', 'Turkmen', 'Turoyo', 'Tuvalu', 'Tuvinian', 'Twi', 'Tyap', 'Udmurt', 'Ugaritic', 'Umbundu', 'Uyghur', 'Uzbek', 'Vai', 'Venda', 'Venetian', 'Veps', 'Votic', 'Vunjo', 'Walloon', 'Walser', 'Waray', 'Warlpiri', 'Washo', 'Wayuu', 'Welsh', 'Wolaytta', 'Wolof', 'Xhosa', 'Yangben', 'Yao', 'Yapese', 'Yemba', 'Yiddish', 'Yoruba', 'Zapotec', 'Zarma', 'Zaza', 'Zeelandic', 'Zenaga', 'Zhuang', 'Zulu', 'Zuni']
 
 countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Angola", "Anguilla", "Antartica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Ashmore and Cartier Island", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burma", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Clipperton Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo, Democratic Republic of the", "Congo, Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czeck Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Europa Island", "Falkland Islands (Islas Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern and Antarctic Lands", "Gabon", "Gambia, The", "Gaza Strip", "Georgia", "Germany", "Ghana", "Gibraltar", "Glorioso Islands", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Holy See (Vatican City)", "Honduras", "Hong Kong", "Howland Island", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Ireland, Northern", "Israel", "Italy", "Jamaica", "Jan Mayen", "Japan", "Jarvis Island", "Jersey", "Johnston Atoll", "Jordan", "Juan de Nova Island", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia, Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Man, Isle of", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Midway Islands", "Moldova", "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcaim Islands", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romainia", "Russia", "Rwanda", "Saint Helena", "Saint Kitts and Nevis", "Saint Lucia", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Scotland", "Senegal", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and South Sandwich Islands", "Spain", "Spratly Islands", "Sri Lanka", "Sudan", "Suriname", "Svalbard", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Tobago", "Toga", "Tokelau", "Tonga", "Trinidad", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "USA", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Virgin Islands", "Wales", "Wallis and Futuna", "West Bank", "Western Sahara", "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"]
@@ -767,15 +769,17 @@ def insert_branches():
 
   db.commit()
 
-async def create_rest():
+def create_rest():
   try:
     #making person
     for i in range(len(countries)):
-      #1 people per country
-      for k in range(1):
-        country = countries[i].replace("'", "-")
-        if len(country) > 20:
+      #if we move the next 3 statements inside next for loop it breaks weirdly... but why? 
+      country = countries[i].replace("'", "-")
+      if len(country) > 20:
           continue
+      #5 people per country
+      employees_in_country = []
+      for person_from_country in range(5):
         province_choices = s_a[i + 1]
         province = random.choice(province_choices).replace("'", "-")
         while len(province) > 20:
@@ -797,6 +801,18 @@ async def create_rest():
           postal_code += str(random.randint(1, 9))
 
         username = generate_username()[0]
+        random_int = random.randint(1,3)
+        if random_int != 1:
+          username += str(random.randint(1, 99))
+        else:
+          username += fake.word()
+        while len(username) > 20:
+          username = generate_username()[0]
+          random_int = random.randint(1,3)
+          if random_int != 1:
+            username += str(random.randint(1, 9))
+          else:
+            username += fake.word()
 
         first_name = fake.first_name()
         middle_name = random.choice(['', fake.first_name()])
@@ -825,10 +841,8 @@ async def create_rest():
           else:
             languages += ", "
           
-        async with aiohttp.ClientSession() as session:
-          async with session.get("https://fakedata.dev/users/v1/get_random_user") as response:
-            if response.status == 200:
-              data = await response.json(content_type=None)
+        r = requests.get('https://fakedata.dev/users/v1/get_random_user')
+        data = r.json()
         work = data['jobTitle']
         picture = data['photoUrl']
         random_name = secrets.token_hex(6)
@@ -850,6 +864,37 @@ async def create_rest():
           phone_number = fake.phone_number().replace('.', '-').split('x')[0]
 
         db.raw_query(f"""INSERT INTO person_phone_number (username, phone_number) VALUES ('{username}', '{phone_number}')""")
+
+        #employees
+        #roll for if this person should be an employee
+        random_int = random.randint(1,5)
+        if random_int == 1:
+          work = "AirBnB Employee"
+          salary = random.choice(salaries)
+          #roll for if they should have a manager (they must not if len(employee_dict[country]) == 0 )
+          random_int = random.randint(1,10)
+          if ((len(employees_in_country) == 0) or (random_int == 1)):
+            managerusername = username
+            title = "Branch Manager"
+          else:
+            managerusername = random.choice(employees_in_country)
+            title = random.choice(titles)
+          employees_in_country.append(username)
+          
+          #roll for if this person should be an admin 
+          random_int = random.randint(1,5)
+          is_admin = False
+          if ((random_int == 1) and (title != "Branch Manager")):
+            is_admin = True
+            title = "Admin"
+
+          db.raw_query(f"""INSERT INTO employees (username, title, salary, country, managerusername) VALUES ('{username}', '{title}', '{salary}', '{country}', '{managerusername}')""")
+          db.raw_query(f""" UPDATE users SET work='{work}' WHERE username='{username}' """)
+
+          #admins 
+          if is_admin:
+            db.raw_query(f"""INSERT INTO admins (username) VALUES ('{username}')""")
+
         
   except Exception as e:
     db.close()
@@ -857,6 +902,7 @@ async def create_rest():
     print(e)
 
   db.commit()
+      
 
 
 def drop_tables():
@@ -869,11 +915,11 @@ def drop_tables():
   """)
   db.commit()
 
-async def main(): 
+def main(): 
   try: 
     create_all_tables()
     insert_branches()
-    await create_rest()
+    create_rest()
 
   except Exception as e: 
     print(e)
@@ -881,7 +927,12 @@ async def main():
     db.new_connection()
 
 if __name__ == "__main__":
-  asyncio.run(main())
+  main()
   #drop_tables()
   ###############################
-  db.close()
+
+
+#for property image api
+#https://source.unsplash.com/random/?house
+#for property name
+#random.choice("Stay With", "The") + fake.company() + random.choice(['Stays', "Accommodations"])
