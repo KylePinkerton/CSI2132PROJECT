@@ -7,8 +7,8 @@ Our attempt at cloning AirBnB for our CSI2132 Winter 2020 Project.
 2. go to `db.py` file in the `db` directory, at the top you will see you will see the variables: `dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project"`
 3. Enter your relevant information to the above to connect to your specific db instance
 4. Use create table statements in `DDL.sql` file in the `db` directory to create all the required tables in pgadmin4 (statements lower in the file depend on statements higher in the file) then you insert the data by yourself using pgadmin4 
-- ALTERNATIVE TO 4 : run `python generate_table_data.py` (W.I.P. - currently creates tables, inserts data into branches, person, users, person_phone_number, person_email_address, employees, admins)
-5. Run the app `python app.py`
+- ALTERNATIVE TO 4 : run `python generate_table_data.py` or `python3 generate_table_data.py` (W.I.P. - currently creates tables, inserts data into branches, person, users, person_phone_number, person_email_address, employees, admins)
+5. Run the app `python app.py` or `python3 app.py`
 
 ## Front-end constraints (cuz of yolo)
 1. Reference country.js to see countries supported
