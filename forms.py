@@ -165,7 +165,7 @@ class SearchProperty(FlaskForm):
   hostusername = StringField('Host Username', validators=[Optional()])
   rent_rate = IntegerField('Maximum Rent Rate ($ Per Night)', validators=[Optional()])
   property_type = StringField('Property Type (Entire, Private, or Shared)', validators=[Optional()])
-  max_guests = IntegerField('Maximum Guests Allowed', validators=[Optional()])
+  max_guests = IntegerField('Minimum Guests Allowed', validators=[Optional()])
   number_beds = IntegerField('Minimum Number of Beds', validators=[Optional()])
   number_baths = IntegerField('Minimum Number of Baths', validators=[Optional()])
   accessible = BooleanField('Accessible?', validators=[Optional()])
