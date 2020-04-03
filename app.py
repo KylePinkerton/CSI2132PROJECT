@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates, SearchProperty
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates, SearchProperty, Admin
 from flask_login import LoginManager, login_required, current_user, logout_user 
 from flask_login import UserMixin, login_user
 import secrets
@@ -159,6 +159,8 @@ def search():
       return render_template("search_results.html", properties=properties)
 
     except Exception as e:
+      db.close()
+      db.new_connection()
       print(e)
       flash('Opps, something went wrong. Try again.', 'danger')
 
@@ -233,6 +235,8 @@ def register():
       db.commit()
       return redirect(url_for('index'))
   except Exception as e:
+    db.close()
+    db.new_connection()
     print(e)
     flash('Error: ' + str(e), 'danger')
     return render_template('register.html', title='Register', form=form)
@@ -430,6 +434,8 @@ def add_property():
       db.commit()
       return redirect(url_for('your_properties'))
   except Exception as e:
+    db.close()
+    db.new_connection()
     print(e)
     flash('Please enter your country/province', 'danger')
     return render_template('add_property.html', title='Add Property', form=form)
@@ -492,6 +498,8 @@ def individual_property(propertyname):
         flash('Sorry, the property is not available on the following dates: ' + error_message , 'danger')
 
     except Exception as e: 
+      db.close()
+      db.new_connection()
       flash('Error: ' + str(e), 'danger')
 
   return render_template('property.html', property_map = property_map, host_picture=host_picture, form=form)
@@ -567,6 +575,8 @@ def add_payment_method():
       db.commit()
       return redirect(url_for('your_payment_method'))
   except Exception as e:
+    db.close()
+    db.new_connection()
     print(e)
     flash('Please enter your billing country', 'danger')
     return render_template('add_payment_method.html', title='Add Payment Method', form=form)
@@ -607,6 +617,38 @@ def add_payout_method():
     db.commit()
     return redirect(url_for('your_payout_method'))
   return render_template('add_payout_method.html', title='Add Payout Method', form=form)
+
+@app.route("/admin", methods=["GET", "POST"])
+@login_required
+def admin():
+  if current_user.admin == True:
+    form = Admin()
+    try: 
+      if form.validate_on_submit():
+        query = request.form.get('query')
+        db.raw_query(query)
+        result = None
+        try:
+          result = db.fetch_all()
+        except Exception as e:
+          print(e)
+        if result == None: 
+          flash(f'Successful query. Your query was: ' + query, 'success')
+          db.commit()
+          return render_template('admin.html', form=form, result=[])
+        else:
+          flash(f'Successful query. Your query was: ' + query, 'success')
+          db.commit()
+          return render_template('admin.html', form=form, result=result)
+
+    except Exception as e:
+      flash('The following error ocurred when executing your query: ' + str(e), 'danger')
+      db.close()
+      db.new_connection()
+      return render_template('admin.html', form=form, result=[])
+    return render_template('admin.html', form=form, result=[])
+  else:
+    abort(404)
 
 if __name__ == "__main__":
   app.run()

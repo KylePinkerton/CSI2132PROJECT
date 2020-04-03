@@ -2,10 +2,12 @@
 {% block content %}
   <h1>Your Account: {{current_user.id}} </h1>
   {% if current_user.employee %}
-  <h4>You are an employee</h4>
+    <h4>You are an employee of the branch operating in {{ current_user.country }}</h4>
   {% endif %}
   {% if current_user.admin %}
-  <h4>You are an admin, go here to access the console:</h4>
+    <h4>You are an admin, go here to access the console:
+      <a class="ml" href="{{ url_for('admin') }}">Admin Console</a>
+    </h4>
   {% endif %}
   <div class="content-section">
     <div class="media">

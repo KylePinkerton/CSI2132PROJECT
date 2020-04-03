@@ -278,6 +278,7 @@ ALTER TABLE project.rental_agreement
 CREATE TABLE project.admins
 (
     username character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT admins_pkey PRIMARY KEY (username),
     CONSTRAINT admins_username2_fkey FOREIGN KEY (username)
         REFERENCES project.employees (username) MATCH SIMPLE
         ON UPDATE NO ACTION

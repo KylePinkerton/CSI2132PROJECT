@@ -3,10 +3,30 @@ import os
 import secrets
 from datetime import datetime
 
+#change these credentials to change db
+dbname = "kpink074"
+user = "kpink074"
+password = os.environ.get("UOTTAWA_PW")
+host = "web0.site.uottawa.ca"
+port = "15432"
+schema = "project"
+
 class DB:
-  def __init__(self, connection):
+  def __init__(self, dbname, user, password, host, port, schema):
+    self.dbname = dbname
+    self.user = user
+    self.password = password
+    self.host = host
+    self.port = port
+    self.schema = schema
+
+  def new_connection(self):
+    connection = new_connection(self.dbname, self.user, self.password, self.host, self.port, self.schema)
     self.connection = connection
     self.cursor = self.connection.cursor
+
+  def close(self):
+    self.connection.close()
   
   #basic db stuff
   def fetch_all(self):
@@ -37,6 +57,10 @@ class DB:
       return (False, "Invalid Password")
     
     return (True, "Successful Sign in")
+
+  #raw query
+  def raw_query(self, query):
+    self.cursor.execute(query)
 
   #admin
   def check_admin(self, username):
@@ -171,10 +195,7 @@ class DB:
     
     return taken_dates
 
-
-
-connection = new_connection(dbname = "kpink074", user = "kpink074", password = os.environ.get("UOTTAWA_PW"), host = "web0.site.uottawa.ca", port = "15432", schema = "project")
-db = DB(connection)
-
+db = DB(dbname, user, password, host, port, schema)
+db.new_connection()
 
 

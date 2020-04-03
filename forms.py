@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField, SelectField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Regexp, ValidationError, Optional
 from db import db
 import phonenumbers
@@ -170,4 +170,8 @@ class SearchProperty(FlaskForm):
   number_baths = IntegerField('Number of Baths', validators=[Optional()])
   accessible = BooleanField('Accessible?', validators=[Optional()])
   pets_allowed = BooleanField('Pets Allowed?', validators=[Optional()])
-  submit = SubmitField('Search for property!', validators=[Optional()])
+  submit = SubmitField('Search for property!')
+
+class Admin(FlaskForm):
+  query = TextAreaField('Enter Your Query: ', validators=[DataRequired()])
+  submit = SubmitField('Perform query')
