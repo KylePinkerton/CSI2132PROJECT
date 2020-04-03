@@ -162,12 +162,12 @@ class AvailableDates(FlaskForm):
 
 class SearchProperty(FlaskForm):
   propertyname = StringField('Property Name', validators=[Optional()])
-  hostusername = StringField('Host username', validators=[Optional()])
-  rent_rate = IntegerField('Rent Rate (Per Night)', validators=[Optional()])
+  hostusername = StringField('Host Username', validators=[Optional()])
+  rent_rate = IntegerField('Maximum Rent Rate ($ Per Night)', validators=[Optional()])
   property_type = StringField('Property Type (Entire, Private, or Shared)', validators=[Optional()])
-  max_guests = IntegerField('Maximum Guests', validators=[Optional()])
-  number_beds = IntegerField('Number of Beds', validators=[Optional()])
-  number_baths = IntegerField('Number of Baths', validators=[Optional()])
+  max_guests = IntegerField('Maximum Guests Allowed', validators=[Optional()])
+  number_beds = IntegerField('Minimum Number of Beds', validators=[Optional()])
+  number_baths = IntegerField('Minimum Number of Baths', validators=[Optional()])
   accessible = BooleanField('Accessible?', validators=[Optional()])
   pets_allowed = BooleanField('Pets Allowed?', validators=[Optional()])
   submit = SubmitField('Search for property!')

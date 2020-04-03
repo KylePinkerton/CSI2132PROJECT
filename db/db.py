@@ -161,8 +161,8 @@ class DB:
     self.cursor.execute(f"insert into property (propertyname, street_number, street_name, apt_number, province, postal_code, rent_rate, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed, country, hostusername, picture) VALUES ('{property_name}', '{street_number}', '{street_name}', '{apt_number}', '{province}', '{postal_code}', '{rent_rate}', '{property_type}', '{max_guests}', '{number_beds}', '{number_baths}', '{accessible}', '{pets_allowed}', '{country}', '{current_user_id}', '{picture}')")
 
   def get_search_properties(self, hostusername, propertyname, rent_rate, country, province, property_type, max_guests, number_beds, number_baths, accessible, pets_allowed):
-      self.cursor.execute(f"""select * from property where hostusername={hostusername} and propertyname={propertyname} and rent_rate={rent_rate} and country={country} and province={province} 
-      and property_type={property_type} and max_guests={max_guests} and number_beds={number_beds} and number_baths={number_baths} and accessible={accessible} and pets_allowed={pets_allowed} limit 20""")
+      self.cursor.execute(f"""select * from property where hostusername={hostusername} and propertyname={propertyname} and rent_rate<={rent_rate} and country={country} and province={province} 
+      and property_type={property_type} and max_guests>={max_guests} and number_beds>={number_beds} and number_baths>={number_baths} and accessible={accessible} and pets_allowed={pets_allowed} limit 20""")
 
   #payment_method
   def get_users_payment_methods(self, username):

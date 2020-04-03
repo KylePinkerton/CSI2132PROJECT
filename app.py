@@ -132,24 +132,20 @@ def search():
       property_details['pets_allowed'] = request.form.get('pets_allowed', default='null')
       #deal with weird cases for optional (can be null) arguments
       for key in property_details:
-        print(key)
         if property_details[key] in ['null', '-1', 'None', ""]:
           property_details[key] = key
         else:
           property_details[key] = "'" + str(property_details[key]) + "'"
 
-      print(property_details)
       properties = []
       db.get_search_properties(property_details['hostusername'], property_details['propertyname'], property_details['rent_rate'], property_details['country'], property_details['province'], property_details['property_type'], property_details['max_guests'], property_details['number_beds'], property_details['number_baths'], property_details['accessible'], property_details['pets_allowed'])
       property_rows = db.fetch_all()
-      print('yo')
       for row in property_rows:
         property_map = {}
         for k in range(len(property_columns)):
           property_map[property_columns[k]] = row[k]
-        
         properties.append(property_map)
-      print('yo')
+
       for prop in properties:
         db.get_picture(prop['hostusername'])
         picture = db.fetch_one()[0]
