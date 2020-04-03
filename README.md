@@ -10,8 +10,8 @@ Our attempt at cloning AirBnB for our CSI2132 Winter 2020 Project.
 5. Run the app `python app.py`(note: you cannot generate branches in the app right now, so if you want to create user profiles/properties/etc in the app you must insert a row into the branches table first)
 
 ## Front-end constraints (cuz of yolo)
-1. Only some countries allowed (Canada, US, UK, Australia, France)
-2. No spaces in propertynames or usernames
+1. Reference country.js to see countries supported
+2. No spaces in propertynames or usernames (ez to fix but ya...)
 3. You can only have 1 payment method, 1 payout method, 1 phone, 1 email 
 4. probably other things...
 
