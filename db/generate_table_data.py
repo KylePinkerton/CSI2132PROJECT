@@ -1214,18 +1214,20 @@ def insert_conversations():
 
   db.commit()
 
-#property_review and property_review_details
-def insert_property_reviews():
+#property_review and property_review_details, user_review, user_review_details
+def insert_reviews():
   try: 
     todays_date = datetime.date.today().strftime('%Y-%m-%d')
     #people who write reviews have completed their valid rental_agreements
-    db.raw_query(f""" select guestusername, propertyname from rental_agreement where end_date<='{todays_date}' and host_accepted='true' """)
+    db.raw_query(f""" select guestusername, propertyname, hostusername from rental_agreement where end_date<='{todays_date}' and host_accepted='true' """)
     stays = db.fetch_all()
     for stay in stays:
       username = stay[0]
       propertyname = stay[1]
+      hostusername = stay[2]
       db.raw_query(f""" select join_date from users where username='{username}' """)
       join_date = db.fetch_one()[0]
+      ######## PROPERTY REVIEWS ###########
       #not all people write reviews
       random_int = random.randint(1,2)
       if random_int == 1:
@@ -1282,6 +1284,17 @@ def insert_property_reviews():
         review_content = fake.text(150)
 
         db.raw_query(f""" INSERT INTO property_review_details (username, propertyname, time, communication, value, check_in, accuracy, cleanliness, location, review_content) VALUES ('{username}', '{propertyname}', '{time}', '{communication}', '{value}', '{check_in}', '{accuracy}', '{cleanliness}', '{location}', '{review_content}') """)
+      ######## USER REVIEWS ###########
+      #not all people write reviews
+      random_int = random.randint(1,2)
+      if random_int == 1:
+        reviewerusername = username
+        revieweeusername = hostusername
+        db.raw_query(f""" INSERT INTO user_review (reviewerusername, revieweeusername) VALUES ('{reviewerusername}', '{revieweeusername}') """)
+
+        time = fake.date_time_between_dates(datetime_start=join_date, datetime_end=datetime.datetime.utcnow(), tzinfo=None)
+        review_content = fake.text(150)
+        db.raw_query(f""" INSERT INTO user_review_details (reviewerusername, revieweeusername, time, review_content) VALUES ('{reviewerusername}', '{revieweeusername}', '{time}', '{review_content}') """)
 
   except Exception as e:
     db.close()
@@ -1309,7 +1322,7 @@ def main():
     works_at()
     insert_rental_agreement()
     insert_conversations()
-    insert_property_reviews()
+    insert_reviews()
 
   except Exception as e: 
     print(e)
