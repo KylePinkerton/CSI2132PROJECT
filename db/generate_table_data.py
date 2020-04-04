@@ -1187,7 +1187,31 @@ def insert_rental_agreement():
 
   db.commit()
 
+#conversation and conversation_messages
+def insert_conversations():
+  try: 
+    db.raw_query(f""" select username from users """)
+    users = db.fetch_all()
+    for user in users:
+      senderusername = user[0]
+      random_int = random.randint(0, 3)
+      for i in range(random_int):
+        db.raw_query(f""" select username from users order by random() limit 1 """)
+        receiverusername = db.fetch_one()[0]
+        if receiverusername == senderusername:
+          continue 
+        db.raw_query(f""" INSERT INTO conversation (senderusername, receiverusername) VALUES ('{senderusername}', '{receiverusername}') """)
+        time = datetime.datetime.utcnow()
+        message_content = fake.text(100)
+        db.raw_query(f""" INSERT INTO conversation_messages (senderusername, receiverusername, time, message_content) VALUES ('{senderusername}', '{receiverusername}', '{time}', '{message_content}') """)
 
+  except Exception as e:
+    db.close()
+    db.new_connection()
+    print(e)
+    traceback.print_exc()
+
+  db.commit()
 
 def drop_tables():
   db.raw_query("""
@@ -1206,6 +1230,7 @@ def main():
     create_alot()
     works_at()
     insert_rental_agreement()
+    insert_conversations()
 
   except Exception as e: 
     print(e)
