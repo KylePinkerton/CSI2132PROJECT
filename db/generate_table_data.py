@@ -524,13 +524,13 @@ def create_works_at():
   CREATE TABLE project.works_at
 (
     employeeusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    propertyusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT works_at_pkey PRIMARY KEY (employeeusername, propertyusername),
+    propertyname character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT works_at_pkey PRIMARY KEY (employeeusername, propertyname),
     CONSTRAINT works_at_employeeusername_fkey FOREIGN KEY (employeeusername)
         REFERENCES project.employees (username) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT works_at_propertyusername_fkey FOREIGN KEY (propertyusername)
+    CONSTRAINT works_at_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
@@ -770,17 +770,23 @@ def insert_branches():
 
   db.commit()
 
-def create_rest():
+#inserts data into person, users, person_phone_number, person_email_address, employees, admins, properties, payment_method, payout_method
+def create_alot():
   try:
     #making person
+    #reduce_data = 5
     for i in range(len(countries)):
+    #for i in range(reduce_data):
+      ##### reduce number of countries to test ######
+      completion = (i/(len(countries)))*100
+      print("create_alot is: " + str(completion) + "% done")
       #if we move the next 3 statements inside next for loop it breaks weirdly... but why? 
       country = countries[i].replace("'", "-")
       if len(country) > 20:
           continue
       #5 people per country
       employees_in_country = []
-      for person_from_country in range(5):
+      for person_from_country in range(10):
         province_choices = s_a[i + 1]
         province = random.choice(province_choices).replace("'", "-")
         while len(province) > 20:
@@ -868,7 +874,7 @@ def create_rest():
 
         #employees
         #roll for if this person should be an employee
-        random_int = random.randint(1,5)
+        random_int = random.randint(1,2)
         if random_int == 1:
           work = "AirBnB Employee"
           salary = random.choice(salaries)
@@ -895,6 +901,7 @@ def create_rest():
           #admins 
           if is_admin:
             db.raw_query(f"""INSERT INTO admins (username) VALUES ('{username}')""")
+        
         ########### property creation ###########
         number_properties = random.randint(1,3)
         if work != "AirBnB Employee":
@@ -1053,7 +1060,38 @@ def create_rest():
 
   db.commit()
       
+def works_at():
+  try: 
+    #reduce_data = 5
+    for i in range(len(countries)):
+    #for i in range(reduce_data):
+      country = countries[i].replace("'", "-")
+      if len(country) > 20:
+          continue
+      db.raw_query(f""" select username, title from employees where country='{country}' """)
+      workers = db.fetch_all()
+      #country has no workers (too little data generated)
+      if workers != None:
+        for worker in workers:
+          username = worker[0]
+          title = worker[1]
+          print(username)
+          print(title)
+          if (title != "Branch Manager") and (title != "Admin"):
+            print('ok')
+            db.raw_query(f""" select propertyname from property where country='{country}' order by random() limit 1 """)
+            work_property = db.fetch_one()
+            propertyname = work_property[0]
+            db.raw_query(f""" INSERT INTO works_at (employeeusername, propertyname) VALUES ('{username}', '{propertyname}') """)
 
+  except Exception as e:
+    db.close()
+    db.new_connection()
+    print(e)
+    traceback.print_exc()
+
+  db.commit()
+      
 
 def drop_tables():
   db.raw_query("""
@@ -1069,7 +1107,8 @@ def main():
   try: 
     create_all_tables()
     insert_branches()
-    create_rest()
+    create_alot()
+    works_at()
 
   except Exception as e: 
     print(e)
