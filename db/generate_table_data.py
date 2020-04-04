@@ -448,7 +448,7 @@ def create_rental_agreement():
     rental_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     start_date date NOT NULL,
     end_date date NOT NULL,
-    sign_date date NOT NULL,
+    sign_date date,
     travelling_for_work boolean NOT NULL,
     message_to_host text COLLATE pg_catalog."default" NOT NULL,
     total_price numeric(8,2) NOT NULL,
@@ -774,9 +774,9 @@ def insert_branches():
 def create_alot():
   try:
     #making person
-    #reduce_data = 5
-    for i in range(len(countries)):
-    #for i in range(reduce_data):
+    #for i in range(len(countries)):
+    reduce_data = 5
+    for i in range(reduce_data):
       ##### reduce number of countries to test ######
       completion = (i/(len(countries)))*100
       print("create_alot is: " + str(completion) + "% done")
@@ -1062,9 +1062,9 @@ def create_alot():
       
 def works_at():
   try: 
-    #reduce_data = 5
-    for i in range(len(countries)):
-    #for i in range(reduce_data):
+    #for i in range(len(countries)):
+    reduce_data = 5 
+    for i in range(reduce_data):
       country = countries[i].replace("'", "-")
       if len(country) > 20:
           continue
@@ -1075,10 +1075,7 @@ def works_at():
         for worker in workers:
           username = worker[0]
           title = worker[1]
-          print(username)
-          print(title)
           if (title != "Branch Manager") and (title != "Admin"):
-            print('ok')
             db.raw_query(f""" select propertyname from property where country='{country}' order by random() limit 1 """)
             work_property = db.fetch_one()
             propertyname = work_property[0]
@@ -1091,7 +1088,63 @@ def works_at():
     traceback.print_exc()
 
   db.commit()
-      
+
+#rental_agreement, property_taken_dates, payment too?
+def insert_rental_agreement():
+  try: 
+    db.raw_query(f""" select username, work from users """)
+    users = db.fetch_all()
+    for user in users:
+      username = user[0]
+      work = user[1]
+      random_int = random.randint(1, 3)
+      if (work != "AirBnB Employee") and (random_int != 1):
+        random_int = random.randint(1, 2)
+        for i in range(random_int):
+          db.raw_query(f""" select propertyname, hostusername, rent_rate from property order by random() limit 1 """)
+          rent_property = db.fetch_one()
+          propertyname = rent_property[0]
+          hostusername = rent_property[1]
+          if hostusername == username:
+            continue
+          rent_rate = rent_property[2] 
+          random_start_delta = random.randint(1, 90)
+          random_interval_delta = random.randint(1, 3)
+          positive_or_negative = random.choice(['+', '-'])
+          start_date = fake.date_between(start_date=positive_or_negative + str(random_start_delta) + 'd', end_date='+92d')
+          end_date = start_date + datetime.timedelta(days=random_interval_delta)
+          if start_date < datetime.date.today():
+            sign_date = start_date - datetime.timedelta(days=random.randint(1, 10))
+            host_accepted = 'true'
+          else:
+            host_accepted = random.choice(['true', 'false'])
+            if host_accepted == 'true':
+              sign_date = datetime.date.today() - datetime.timedelta(days=random.randint(1, 10))
+            else:
+              sign_date = 'null'
+          
+          travelling_for_work = random.choice(['true', 'false'])
+          message_to_host = fake.text(100)
+          total_price = random_interval_delta*rent_rate
+          start_date = start_date.strftime('%Y-%m-%d')
+          end_date = end_date.strftime('%Y-%m-%d')
+          guestusername = username
+          rental_id = secrets.token_hex(10)
+          if sign_date != 'null':
+            db.raw_query(f""" INSERT INTO rental_agreement (rental_id, start_date, end_date, sign_date, travelling_for_work, message_to_host, total_price, host_accepted, propertyname, guestusername, hostusername) VALUES ('{rental_id}', '{start_date}', '{end_date}', '{sign_date}', '{travelling_for_work}', '{message_to_host}', '{total_price}', '{host_accepted}', '{propertyname}', '{guestusername}', '{hostusername}') """)
+          else: 
+            db.raw_query(f""" INSERT INTO rental_agreement (rental_id, start_date, end_date, sign_date, travelling_for_work, message_to_host, total_price, host_accepted, propertyname, guestusername, hostusername) VALUES ('{rental_id}', '{start_date}', '{end_date}', {sign_date}, '{travelling_for_work}', '{message_to_host}', '{total_price}', '{host_accepted}', '{propertyname}', '{guestusername}', '{hostusername}') """)
+
+
+  except Exception as e:
+    db.close()
+    db.new_connection()
+    print(e)
+    traceback.print_exc()
+
+  db.commit()
+
+
 
 def drop_tables():
   db.raw_query("""
@@ -1109,6 +1162,7 @@ def main():
     insert_branches()
     create_alot()
     works_at()
+    insert_rental_agreement()
 
   except Exception as e: 
     print(e)
