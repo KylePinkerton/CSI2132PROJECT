@@ -975,7 +975,12 @@ def create_alot():
               postal_code += random.choice(alphabet)
               postal_code += str(random.randint(1, 9))
             
-            rent_rate = (round(random.randint(50, 9999)/5)*5)
+            random_int = random.randint(1, 5)
+            if random_int != 1:
+              rent_rate = (round(random.randint(50, 300)/5)*5)
+            else:
+              rent_rate = (round(random.randint(50, 9999)/5)*5)
+            
             property_type = random.choice(['entire', 'private', 'shared'])
             number_beds = random.randint(1, 10)
             number_baths = random.randint(1, 10)
@@ -1138,15 +1143,40 @@ def insert_rental_agreement():
               taken_date = date.strftime('%Y-%m-%d')
               db.raw_query(f""" INSERT INTO property_taken_dates (propertyname, taken_date) VALUES ('{propertyname}', '{taken_date}') """)
             
+            end_date_datetime = end_date
             start_date = start_date.strftime('%Y-%m-%d')
             end_date = end_date.strftime('%Y-%m-%d')
 
             db.raw_query(f""" INSERT INTO rental_agreement (rental_id, start_date, end_date, sign_date, travelling_for_work, message_to_host, total_price, host_accepted, propertyname, guestusername, hostusername) VALUES ('{rental_id}', '{start_date}', '{end_date}', '{sign_date}', '{travelling_for_work}', '{message_to_host}', '{total_price}', '{host_accepted}', '{propertyname}', '{guestusername}', '{hostusername}') """)
-            
+
+            #create a deposit and a final payment
+            if end_date_datetime <= datetime.date.today():
+              for payment in range(2):
+                payment_id = secrets.token_hex(10)
+                if payment == 0:
+                  is_deposit = 'true'
+                  amount = float(total_price)*0.20
+                  status = 'approved'
+                else:
+                  is_deposit = 'false'
+                  amount = float(total_price)*0.80
+                  status = random.choice(['approved', 'pending', 'approved'])
+                
+                db.raw_query(f""" INSERT INTO payment (payment_id, is_deposit, amount, status, rental_id, guestusername, hostusername) VALUES ('{payment_id}', '{is_deposit}', '{amount}', '{status}', '{rental_id}', '{guestusername}', '{hostusername}') """)
+
+            #create only deposit
+            else:
+              payment_id = secrets.token_hex(10)
+              is_deposit = 'true'
+              amount = float(total_price)*0.20
+              status = random.choice(['pending', 'approved'])
+              db.raw_query(f""" INSERT INTO payment (payment_id, is_deposit, amount, status, rental_id, guestusername, hostusername) VALUES ('{payment_id}', '{is_deposit}', '{amount}', '{status}', '{rental_id}', '{guestusername}', '{hostusername}') """)
+
           else: 
             start_date = start_date.strftime('%Y-%m-%d')
             end_date = end_date.strftime('%Y-%m-%d')
             db.raw_query(f""" INSERT INTO rental_agreement (rental_id, start_date, end_date, sign_date, travelling_for_work, message_to_host, total_price, host_accepted, propertyname, guestusername, hostusername) VALUES ('{rental_id}', '{start_date}', '{end_date}', {sign_date}, '{travelling_for_work}', '{message_to_host}', '{total_price}', '{host_accepted}', '{propertyname}', '{guestusername}', '{hostusername}') """)
+            #no payment row created here, because host must sign rental agreement before user deposits
 
 
   except Exception as e:
