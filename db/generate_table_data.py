@@ -10,6 +10,9 @@ import asyncio
 import secrets
 import time
 import traceback
+import sys
+import glob
+import os
 
 fake = Faker()
 salaries = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000]
@@ -17,6 +20,11 @@ titles = ["Electrician", "Renovation Worker", "Housekeeping Worker", "Plumber", 
 language_choices = ['Achinese', 'Acoli', 'Adangme', 'Adyghe', 'Afar', 'Afrihili', 'Afrikaans', 'Aghem', 'Ainu', 'Akan', 'Akkadian', 'Akoose', 'Alabama', 'Albanian', 'Aleut', 'Amarik', 'Angika', 'Arabik', 'Aragonese', 'Aramaic', 'Araona', 'Arapaho', 'Arawak', 'Armenian', 'Aromanian', 'Arpitan', 'Assamese', 'Asturian', 'Asu', 'Atsam', 'Avaric', 'Avestan', 'Awadhi', 'Aymara', 'Azerbaijani', 'Badaga', 'Bafia', 'Bafut', 'Bakhtiari', 'Balinese', 'Baluchi', 'Bambara', 'Bamun', 'Banjar', 'Basaa', 'Bashkir', 'Basque', 'Bavarian', 'Beja', 'Bemba', 'Bena', 'Betawi', 'Bhojpuri', 'Bikol', 'Bini', 'Bishnupriya', 'Bislama', 'Blin', 'Blissymbols', 'Bodo', 'Bosnian', 'Brahui', 'Braj', 'Breton', 'Buginese', 'Bulu', 'Buriat', 'Caddo', 'Cantonese', 'Capiznon', 'Carib', 'Catalan', 'Cayuga', 'Cebuano', 'Chagatai', 'Chamorro', 'Chechen', 'Cherokee', 'Cheyenne', 'Chibcha', 'Chiga', 'Chipewyan', 'Choctaw', 'Chuukese', 'Chuvash', 'Colognian', 'Comorian', 'Coptic', 'Cornish', 'Corsican', 'Cree', 'Creek', 'Croatian', 'Dakota', 'Danish', 'Dargwa', 'Dazaga', 'Delaware', 'Dinka', 'Divehi', 'Dogri', 'Dogrib', 'Duala', 'Dyula', 'Dzongkha', 'Efik', 'Ekajuk', 'Elamite', 'Embu', 'Emilian', 'Erzya', 'Esperanto', 'Estonian', 'Ewe', 'Ewondo', 'Extremaduran', 'Fang', 'Fanti', 'Faroese', 'Fijian', 'Filipino', 'Finnish', 'Flemish', 'Fon', 'Frafra', 'Friulian', 'Fulah', 'Ga', 'Gagauz', 'Galician', 'Ganda', 'Gayo', 'Gbaya', 'Geez', 'Georgian', 'Ghomala', 'Gilaki', 'Gilbertese', 'Gondi', 'Gorontalo', 'Gothic', 'Grebo', 'Guarani', 'Gujarati', 'Gusii', 'Gyaaman', 'Haida', 'Haitian', 'Hausa', 'Hawaiian', 'Hebrew', 'Herero', 'Hiligaynon', 'Hindi', 'Hittite', 'Hmong', 'Hupa', 'Iban', 'Ibibio', 'Icelandic', 'Ido', 'Igbo', 'Iloko', 'Ingrian', 'Ingush', 'Interlingua', 'Interlingue', 'Inuktitut', 'Inupiaq', 'Irish', 'Jju', 'Jutish', 'Kabardian', 'Kabuverdianu', 'Kabyle', 'Kachin', 'Kaingang', 'Kako', 'Kalaallisut', 'Kalenjin', 'Kalmyk', 'Kamba', 'Kanembu', 'Kannada', 'Kanuri', 'Karelian', 'Kashmiri', 'Kashubian', 'Kawi', 'Kazakh', 'Kenyang', 'Khasi', 'Khotanese', 'Khowar', 'Kikuyu', 'Kimbundu', 'Kirmanjki', 'Klingon', 'Kom', 'Komi', 'Kongo', 'Konkani', 'Koro', 'Kosraean', 'Kotava', 'Kpelle', 'Krio', 'Kuanyama', 'Kumyk', 'Kurdish', 'Kurukh', 'Kutenai', 'Kwasio', 'Kyrgyz', 'Ladino', 'Lahnda', 'Lakota', 'Lamba', 'Langi', 'Lao', 'Latgalian', 'Latin', 'Latvian', 'Laz', 'Lezghian', 'Ligurian', 'Limburgish', 'Lingala', 'Lithuanian', 'Livonian', 'Lojban', 'Lombard', 'Lozi', 'Luiseno', 'Lunda', 'Luo', 'Luxembourgish', 'Luyia', 'Maba', 'Macedonian', 'Machame', 'Madurese', 'Mafa', 'Magahi', 'Maithili', 'Makasar', 'Makonde', 'Malagasy', 'Malayalam', 'Maltese', 'Manchu', 'Mandar', 'Mandingo', 'Manipuri', 'Manx', 'Maori', 'Mapuche', 'Marathi', 'Mari', 'Marshallese', 'Marwari', 'Masai', 'Mazanderani', 'Medumba', 'Mende', 'Mentawai', 'Meru', 'Micmac', 'Minangkabau', 'Mingrelian', 'Mirandese', 'Mizo', 'Mohawk', 'Moksha', 'Moldavian', 'Mongo', 'Mongolian', 'Morisyen', 'Mossi', 'Mundang', 'Myene', 'Nama', 'Nauru', 'Navajo', 'Ndonga', 'Neapolitan', 'Newari', 'Ngambay', 'Ngiemboon', 'Ngomba', 'Nheengatu', 'Nias', 'Niuean', 'Nogai', 'Norwegian', 'Novial', 'Nuer', 'Nyamwezi', 'Nyanja', 'Nyankole', 'Nyoro', 'Nzima', 'Occitan', 'Ojibwa', 'Oriya', 'Oromo', 'Osage', 'Ossetic', 'Pahlavi', 'Palauan', 'Pali', 'Pampanga', 'Pangasinan', 'Papiamento', 'Pashto', 'Phoenician', 'Picard', 'Piedmontese', 'Plautdietsch', 'Pohnpeian', 'Pontic', 'Prussian', 'Quechua', 'Rajasthani', 'Rapanui', 'Rarotongan', 'Riffian', 'Romagnol', 'Romansh', 'Romany', 'Rombo', 'Root', 'Rotuman', 'Roviana', 'Rundi', 'Rusyn', 'Rwa', 'Saho', 'Sakha', 'Samburu', 'Samoan', 'Samogitian', 'Sandawe', 'Sango', 'Sangu', 'Sanskrit', 'Santali', 'Sardinian', 'Sasak', 'Saurashtra', 'Scots', 'Selayar', 'Selkup', 'Sena', 'Seneca', 'Serbian', 'Serer', 'Seri', 'Shambala', 'Shan', 'Shona', 'Sicilian', 'Sidamo', 'Siksika', 'Silesian', 'Sindhi', 'Sinhala', 'Slave', 'Slovak', 'Slovenian', 'Soga', 'Sogdien', 'Soninke', 'Sukuma', 'Sumerian', 'Sundanese', 'Susu', 'Swahili', 'Swati', 'Syriac', 'Tachelhit', 'Tagalog', 'Tahitian', 'Taita', 'Tajik', 'Talysh', 'Tamashek', 'Taroko', 'Tasawaq', 'Tatar', 'Telugu', 'Tereno', 'Teso', 'Tetum', 'Tibetan', 'Tigre', 'Tigrinya', 'Timne', 'Tiv', 'Tlingit', 'Tokelau', 'Tongan', 'Tsakhur', 'Tsakonian', 'Tsimshian', 'Tsonga', 'Tswana', 'Tulu', 'Tumbuka', 'Turkmen', 'Turoyo', 'Tuvalu', 'Tuvinian', 'Twi', 'Tyap', 'Udmurt', 'Ugaritic', 'Umbundu', 'Uyghur', 'Uzbek', 'Vai', 'Venda', 'Venetian', 'Veps', 'Votic', 'Vunjo', 'Walloon', 'Walser', 'Waray', 'Warlpiri', 'Washo', 'Wayuu', 'Welsh', 'Wolaytta', 'Wolof', 'Xhosa', 'Yangben', 'Yao', 'Yapese', 'Yemba', 'Yiddish', 'Yoruba', 'Zapotec', 'Zarma', 'Zaza', 'Zeelandic', 'Zenaga', 'Zhuang', 'Zulu', 'Zuni']
 
 countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Angola", "Anguilla", "Antartica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Ashmore and Cartier Island", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burma", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Clipperton Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo, Democratic Republic of the", "Congo, Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czeck Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Europa Island", "Falkland Islands (Islas Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern and Antarctic Lands", "Gabon", "Gambia, The", "Gaza Strip", "Georgia", "Germany", "Ghana", "Gibraltar", "Glorioso Islands", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Holy See (Vatican City)", "Honduras", "Hong Kong", "Howland Island", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Ireland, Northern", "Israel", "Italy", "Jamaica", "Jan Mayen", "Japan", "Jarvis Island", "Jersey", "Johnston Atoll", "Jordan", "Juan de Nova Island", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia, Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Man, Isle of", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Midway Islands", "Moldova", "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcaim Islands", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romainia", "Russia", "Rwanda", "Saint Helena", "Saint Kitts and Nevis", "Saint Lucia", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Scotland", "Senegal", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and South Sandwich Islands", "Spain", "Spratly Islands", "Sri Lanka", "Sudan", "Suriname", "Svalbard", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Tobago", "Toga", "Tokelau", "Tonga", "Trinidad", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "USA", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Virgin Islands", "Wales", "Wallis and Futuna", "West Bank", "Western Sahara", "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"]
+
+def leet(text):
+    getchar = lambda c: chars[c] if c in chars else c
+    chars = {"a":"4","e":"3","l":"1","o":"0","s":"5"}
+    return ''.join(getchar(c) for c in text)
 
 s_a = ['' for x in range(253)]
 s_a[0]=""
@@ -771,22 +779,31 @@ def insert_branches():
   db.commit()
 
 #inserts data into person, users, person_phone_number, person_email_address, employees, admins, properties, payment_method, payout_method
-def create_alot():
+def create_alot(generation_size):
+  if generation_size == 'small':
+    generation_size = 5
+  elif generation_size == 'medium':
+    generation_size = 10
+  elif generation_size == 'large':
+    generation_size = 25
+  elif generation_size == 'massive':
+    generation_size = 50
+    
   try:
     #making person
-    #for i in range(len(countries)):
-    reduce_data = 5
-    for i in range(reduce_data):
+    for i in range(len(countries)):
+    #reduce_data = 5
+    #for i in range(reduce_data):
       ##### reduce number of countries to test ######
       completion = (i/(len(countries)))*100
-      print("create_alot is: " + str(completion) + "% done")
+      print("generating users, properties, employees, emails, pictures, etc.... " + str(round(completion, 2)) + "% done")
       #if we move the next 3 statements inside next for loop it breaks weirdly... but why? 
       country = countries[i].replace("'", "-")
       if len(country) > 20:
           continue
-      #5 people per country
       employees_in_country = []
-      for person_from_country in range(10):
+      #generation size is # of people per country
+      for person_from_country in range(generation_size):
         province_choices = s_a[i + 1]
         province = random.choice(province_choices).replace("'", "-")
         while len(province) > 20:
@@ -807,20 +824,82 @@ def create_alot():
           postal_code += random.choice(alphabet)
           postal_code += str(random.randint(1, 9))
 
-        username = generate_username()[0]
-        random_int = random.randint(1,3)
-        if random_int != 1:
-          username += str(random.randint(1, 99))
-        else:
-          username += fake.word()
-        while len(username) > 20:
-          username = generate_username()[0]
-          random_int = random.randint(1,3)
-          if random_int != 1:
-            username += str(random.randint(1, 9))
-          else:
-            username += fake.word()
+        random_int = random.randint(1,9)
+        if random_int == 1:
+          username = generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
 
+        elif random_int == 2:
+          username = fake.name() + generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+
+        elif random_int == 3:
+          username = fake.company() + str(random.randint(1, 999)) + fake.name()
+
+        elif random_int == 4:
+          username = generate_username()[0] + str(random.randint(1, 9999))
+          random_int = random.randint(1,2)
+          if random_int == 1:
+            username += random.choice(alphabet)
+        
+        elif random_int == 5:
+          username = fake.name() + fake.name() + str(random.randint(1, 9999))
+          random_int = random.randint(1,2)
+          if random_int == 1:
+            username += random.choice(alphabet)
+        
+        elif random_int == 6:
+          username = fake.word() + fake.word() + str(random.randint(1, 9999))
+          random_int = random.randint(1,2)
+          if random_int == 1:
+            username += random.choice(alphabet)
+        
+        elif random_int == 7:
+          username = fake.word() + generate_username()[0] + str(random.randint(1, 9999))
+        
+        elif random_int == 8:
+          username = fake.word() + fake.company() + random.choice(alphabet) + str(random.randint(1, 9999))
+
+        else:
+          username = fake.street_name() + fake.word() + str(random.randint(1, 9999))
+
+        while len(username) > 20:
+          random_int = random.randint(1,9)
+          if random_int == 1:
+            username = generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+
+          elif random_int == 2:
+            username = fake.name() + generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+
+          elif random_int == 3:
+            username = fake.company() + str(random.randint(1, 999)) + fake.name()
+
+          elif random_int == 4:
+            username = generate_username()[0] + str(random.randint(1, 9999))
+            random_int = random.randint(1,2)
+            if random_int == 1:
+              username += random.choice(alphabet)
+          
+          elif random_int == 5:
+            username = fake.name() + fake.name() + str(random.randint(1, 9999))
+            random_int = random.randint(1,2)
+            if random_int == 1:
+              username += random.choice(alphabet)
+          
+          elif random_int == 6:
+            username = fake.word() + fake.word() + str(random.randint(1, 9999))
+            random_int = random.randint(1,2)
+            if random_int == 1:
+              username += random.choice(alphabet)
+          
+          elif random_int == 7:
+            username = fake.word() + generate_username()[0] + str(random.randint(1, 9999))
+          
+          elif random_int == 8:
+            username = fake.word() + fake.company() + random.choice(alphabet) + str(random.randint(1, 9999))
+
+          else:
+            username = fake.street_name() + fake.word() + str(random.randint(1, 9999))
+        
+        username = username.replace(' ', '-')
         first_name = fake.first_name()
         middle_name = random.choice(['', fake.first_name()])
         last_name = fake.last_name()
@@ -874,7 +953,7 @@ def create_alot():
 
         #employees
         #roll for if this person should be an employee
-        random_int = random.randint(1,2)
+        random_int = random.randint(1,10)
         if random_int == 1:
           work = "AirBnB Employee"
           salary = random.choice(salaries)
@@ -906,58 +985,70 @@ def create_alot():
         number_properties = random.randint(1,3)
         if work != "AirBnB Employee":
           for create_propety in range(number_properties):
-            random_int = random.randint(1,12)
+            random_int = random.randint(1,15)
             if random_int == 1:
-              propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 99))
+              propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 999)) + random.choice(alphabet)
             elif random_int == 2:
-              propertyname =  str(random.randint(1, 99)) + fake.company() + str(random.randint(1, 99))
+              propertyname =  str(random.randint(1, 999)) + random.choice(alphabet) + fake.company() + str(random.randint(1, 999)) + random.choice(alphabet)
             elif random_int == 3:
-              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 99))
+              propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 999))
             elif random_int == 4:
-              propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + random.choice(alphabet)
             elif random_int == 5:
-              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99))
+              propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 999))
             elif random_int == 6:
-              propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet) + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
             elif random_int == 7:
-              propertyname = fake.company() + fake.street_name() + str(random.randint(1, 99))
+              propertyname = fake.company() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
             elif random_int == 8:
-              propertyname = str(random.randint(1, 99)) + fake.company() + fake.street_name()
+              propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.company() + fake.street_name()
             elif random_int == 9:
-              propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 99))
+              propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
             elif random_int == 10:
-              propertyname = fake.company() + str(random.randint(1, 99)) + fake.street_name()
+              propertyname = fake.company() + str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet)
             elif random_int == 11:
-              propertyname = str(random.randint(1, 99)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+            elif random_int == 12:
+              propertyname = fake.first_name() + str(random.randint(1, 999)) + random.choice(alphabet) + random.choice(["Best", "Renovated ", "(new)", "*NEW*"])
+            elif random_int == 13:
+              propertyname = random.choice(["Best", "Renovated ", "(new)", "*NEW*"]) + fake.name() + str(random.randint(1, 999)) + random.choice(alphabet)
+            elif random_int == 14:
+              propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + fake.name()
             else:
-              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99)) + fake.company()
+              propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + random.choice(alphabet) + str(random.randint(1, 999)) + fake.company()
 
             while len(propertyname) > 20:
-              random_int = random.randint(1,12)
+              random_int = random.randint(1,15)
               if random_int == 1:
-                propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 99))
+                propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 999)) + random.choice(alphabet)
               elif random_int == 2:
-                propertyname =  str(random.randint(1, 99)) + fake.company() + str(random.randint(1, 99))
+                propertyname =  str(random.randint(1, 999)) + random.choice(alphabet) + fake.company() + str(random.randint(1, 999)) + random.choice(alphabet)
               elif random_int == 3:
-                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 99))
+                propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 999))
               elif random_int == 4:
-                propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+                propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + random.choice(alphabet)
               elif random_int == 5:
-                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99))
+                propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 999))
               elif random_int == 6:
-                propertyname = str(random.randint(1, 99)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+                propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet) + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
               elif random_int == 7:
-                propertyname = fake.company() + fake.street_name() + str(random.randint(1, 99))
+                propertyname = fake.company() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
               elif random_int == 8:
-                propertyname = str(random.randint(1, 99)) + fake.company() + fake.street_name()
+                propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.company() + fake.street_name()
               elif random_int == 9:
-                propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 99))
+                propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
               elif random_int == 10:
-                propertyname = fake.company() + str(random.randint(1, 99)) + fake.street_name()
+                propertyname = fake.company() + str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet)
               elif random_int == 11:
-                propertyname = str(random.randint(1, 99)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+                propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              elif random_int == 12:
+                propertyname = fake.first_name() + str(random.randint(1, 999)) + random.choice(alphabet) + random.choice(["Best", "Renovated ", "(new)", "*NEW*"])
+              elif random_int == 13:
+                propertyname = random.choice(["Best", "Renovated ", "(new)", "*NEW*"]) + fake.name() + str(random.randint(1, 999)) + random.choice(alphabet)
+              elif random_int == 14:
+                propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + fake.name()
               else:
-                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 99)) + fake.company()
+                propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + random.choice(alphabet) + str(random.randint(1, 999)) + fake.company()
 
             propertyname = propertyname.replace(' ', '-')
             street_number = random.randint(1, 999)
@@ -1064,12 +1155,15 @@ def create_alot():
 
 
   db.commit()
-      
+
+#works_at
 def works_at():
   try: 
-    #for i in range(len(countries)):
-    reduce_data = 5 
-    for i in range(reduce_data):
+    for i in range(len(countries)):
+    #reduce_data = 5 
+    #for i in range(reduce_data):
+      completion = (i/(len(countries)))*100
+      print("assigning employees to properties.... " + str(round(completion, 2)) + "% done")
       country = countries[i].replace("'", "-")
       if len(country) > 20:
           continue
@@ -1083,6 +1177,8 @@ def works_at():
           if (title != "Branch Manager") and (title != "Admin"):
             db.raw_query(f""" select propertyname from property where country='{country}' order by random() limit 1 """)
             work_property = db.fetch_one()
+            if work_property == None:
+              continue
             propertyname = work_property[0]
             db.raw_query(f""" INSERT INTO works_at (employeeusername, propertyname) VALUES ('{username}', '{propertyname}') """)
 
@@ -1099,7 +1195,11 @@ def insert_rental_agreement():
   try: 
     db.raw_query(f""" select username, work from users """)
     users = db.fetch_all()
+    progress = 0
     for user in users:
+      progress += 1
+      completion = (progress/(len(users)))*100
+      print("generating rental agreements.... " + str(round(completion, 2)) + "% done")
       username = user[0]
       work = user[1]
       random_int = random.randint(1, 3)
@@ -1118,6 +1218,24 @@ def insert_rental_agreement():
           positive_or_negative = random.choice(['+', '-'])
           start_date = fake.date_between(start_date=positive_or_negative + str(random_start_delta) + 'd', end_date='+92d')
           end_date = start_date + datetime.timedelta(days=random_interval_delta)
+
+          dates = []
+          for number_days in range(random_interval_delta):
+            date = start_date + datetime.timedelta(days=number_days)
+            dates.append(date)
+          #if one of the dates is taken, this stay isnt valid
+          is_valid = True
+          for date in dates:
+            taken_date = date.strftime('%Y-%m-%d')
+            #see if its a valid date
+            db.raw_query(f""" select * from property_taken_dates where propertyname='{propertyname}' and taken_date='{taken_date}'  """)
+            already_exists = db.fetch_one()
+            if already_exists != None:
+              is_valid = False
+
+          if is_valid == False:
+            continue
+
           if start_date < datetime.date.today():
             sign_date = start_date - datetime.timedelta(days=random.randint(1, 10))
             host_accepted = 'true'
@@ -1141,6 +1259,7 @@ def insert_rental_agreement():
               dates.append(date)
             for date in dates:
               taken_date = date.strftime('%Y-%m-%d')
+              
               db.raw_query(f""" INSERT INTO property_taken_dates (propertyname, taken_date) VALUES ('{propertyname}', '{taken_date}') """)
             
             end_date_datetime = end_date
@@ -1192,10 +1311,14 @@ def insert_conversations():
   try: 
     db.raw_query(f""" select username, join_date from users """)
     users = db.fetch_all()
+    progress = 0
     for user in users:
+      progress += 1
+      completion = (progress/(len(users)))*100
+      print("generating conversations.... " + str(round(completion, 2)) + "% done")
       senderusername = user[0]
       join_date = user[1]
-      random_int = random.randint(0, 1) #cam increase this with large amount of data being
+      random_int = random.randint(0, 2) #cam increase this with large amount of data
       for i in range(random_int):
         db.raw_query(f""" select username from users order by random() limit 1 """)
         receiverusername = db.fetch_one()[0]
@@ -1221,7 +1344,11 @@ def insert_reviews():
     #people who write reviews have completed their valid rental_agreements
     db.raw_query(f""" select guestusername, propertyname, hostusername from rental_agreement where end_date<='{todays_date}' and host_accepted='true' """)
     stays = db.fetch_all()
+    progress = 0
     for stay in stays:
+      progress += 1
+      completion = (progress/(len(stays)))*100
+      print("generating reviews.... " + str(round(completion, 2)) + "% done")
       username = stay[0]
       propertyname = stay[1]
       hostusername = stay[2]
@@ -1304,7 +1431,7 @@ def insert_reviews():
 
   db.commit()
 
-def drop_tables():
+def reset():
   db.raw_query("""
 
   drop table admins, branches, conversation, users, conversation_messages, employees, payment, payment_method,
@@ -1313,29 +1440,105 @@ def drop_tables():
 
   """)
   db.commit()
+  
+  files = glob.glob('../static/images/*')
+  for f in files:
+    if f == "../static/images/default.png":
+      continue
+    else:
+      os.remove(f)
 
-def main(): 
-  try: 
-    create_all_tables()
-    insert_branches()
-    create_alot()
-    works_at()
-    insert_rental_agreement()
-    insert_conversations()
-    insert_reviews()
+def create_admin():
+  try:
+    username = 'admin'
+    password = 'admin'
+    first_name = fake.first_name()
+    middle_name = ' '
+    last_name = fake.last_name()
+    street_number = random.randint(1, 99)
+    street_name = fake.street_name()
+    apt_number = random.randint(1, 999)
+    postal_code = ""
+    for i in range(3):
+      postal_code += random.choice(alphabet)
+      postal_code += str(random.randint(1, 9))
+    date_of_birth = fake.date()
+    country = 'Canada'
+    province = 'Ontario'
+    salary = '100000'
+    title = 'Master Admin'
+    managerusername = 'admin'
 
-  except Exception as e: 
-    print(e)
+    email = fake.email()
+    while len(email) > 20:
+      email = fake.email()
+
+    phone_number = fake.phone_number().replace('.', '-').split('x')[0]
+    while len(phone_number) > 20:
+      phone_number = fake.phone_number().replace('.', '-').split('x')[0]
+
+    work = "AirBnB Employee"
+
+    join_date = fake.date_between(start_date='-60d', end_date='today').strftime('%Y-%m-%d')
+
+    db.raw_query(f"""INSERT INTO person (username, first_name, middle_name, last_name, password, street_number, street_name, apt_number,
+                postal_code, date_of_birth, country, province) VALUES ('{username}', '{first_name}', '{middle_name}', '{last_name}', 
+                '{password}', '{street_number}', '{street_name}', '{apt_number}', '{postal_code}', '{date_of_birth}', '{country}', '{province}')""")
+    
+    db.raw_query(f"""INSERT INTO employees (username, title, salary, country, managerusername) VALUES ('{username}', '{title}', '{salary}', '{country}', '{managerusername}')""")
+    
+    db.raw_query(f"""INSERT INTO admins (username) VALUES ('{username}')""")
+
+    db.raw_query(f"""INSERT INTO users (username, join_date, verified, about, languages, work, profile_picture) VALUES ('{username}', '{join_date}', 'false', 'N/A', 'English', '{work}', 'default.png')""")
+    db.raw_query(f"insert into person_phone_number (username, phone_number) VALUES ('{username}', '{phone_number}')")
+    db.raw_query(f"insert into person_email_address (username, email_address) VALUES ('{username}', '{email}')")
+
+  except Exception as e:
     db.close()
     db.new_connection()
+    print(e)
+    traceback.print_exc()
+
+  db.commit()
+
+def main(): 
+  try:
+    generation_size = sys.argv[1].lower()
+    if generation_size not in ['small', 'medium', 'large', 'massive']:
+      if generation_size == 'reset':
+        reset()
+        print("Reset successful, ready for data to be generated.")
+        db.close()
+        db.new_connection()
+      else:
+        print("Command not recognized, proceeding with generating a medium (recommended) dataset...")
+        generation_size = 'medium'
+  except IndexError as e:
+    print("Generating a medium (recommended) dataset...")
+    generation_size = 'medium'
+  if generation_size != 'reset':
+    try: 
+      print("Creating tables...")
+      create_all_tables()
+      print("Creating branches...")
+      insert_branches()
+      create_alot(generation_size)
+      print("Assigning employees properties to work at...")
+      works_at()
+      print("Creating rental_agreements...")
+      insert_rental_agreement()
+      print("Generating conversations...")
+      insert_conversations()
+      print("Generating reviews...")
+      insert_reviews()
+      print("Creating a master admin account...")
+      create_admin()
+      print("Successful data generation! \nTo log in, use the credentials: \n  username: admin \n  password: admin")
+
+    except Exception as e:
+      print(e)
+      db.close()
+      db.new_connection()
 
 if __name__ == "__main__":
   main()
-  #drop_tables()
-  ###############################
-
-
-#for property image api
-#https://source.unsplash.com/random/?house
-#for property name
-#random.choice("Stay With", "The") + fake.company() + random.choice(['Stays', "Accommodations"])
