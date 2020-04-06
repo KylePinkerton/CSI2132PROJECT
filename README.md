@@ -12,7 +12,7 @@ AirBnB clone for our CSI2132 Winter 2020 Project.
 - `port = "15432"` 
 - `schema = "project"` 
 - Enter your relevant information to the above to connect to your specific db instance
-2. run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (this isn't that fastest process) s
+2. run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (this isn't that fastest process)
 - see specific instructions for this setup script below
 #### OR 
 3. As an alternative to generating your own own data using `generate_table_data.py`, you can instead restore your database using the backup files `defaultdata.backup` and `defaultdata.sql` located in the `db/backups` directory (for more information on how to do this visit https://www.postgresql.org/docs/9.1/backup-dump.html). This data was generated using `generate_table_data.py large`. A caveat to using this approach to populate your database is the fact that during the generation of data user/property pictures are saved to `static/images` in order to be served in the application. This means that your application will not have generated pictures.
