@@ -69,6 +69,9 @@ class DB:
   #employee
   def check_employee(self, username):
     self.cursor.execute(f"select count(username) from employees where username='{username}'")
+  
+  def get_title(self, username):
+    self.cursor.execute(f" select title from employees where username='{username}' ")
 
   #person
   def valid_username(self, username):

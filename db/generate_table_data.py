@@ -1577,7 +1577,7 @@ def insert_conversations():
         if receiverusername == senderusername:
           continue 
         db.raw_query(f""" select * from conversation where senderusername='{senderusername}' and receiverusername='{receiverusername}' """)
-        already_exists = db.fetch_one()[0]
+        already_exists = db.fetch_one()
         #if the convo already exists, skip it to prevent primary key clash
         if already_exists != None:
           continue
@@ -1798,4 +1798,4 @@ def main():
       db.new_connection()
 
 if __name__ == "__main__":
-  main()
+  insert_conversations()
