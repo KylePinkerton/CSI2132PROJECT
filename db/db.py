@@ -73,8 +73,14 @@ class DB:
   def get_title(self, username):
     self.cursor.execute(f" select title from employees where username='{username}' ")
 
+  def get_manager(self, username):
+    self.cursor.execute(f" select managerusername from employees where username='{username}' ")
+
   def get_assigned_properties(self, username):
     self.cursor.execute(f""" select P.propertyname, P.street_name, P.street_number, P.postal_code, P.province, P.country from works_at as W, property as P where W.propertyname=P.propertyname and W.employeeusername='{username}' """)
+
+  def view_employees(self, country):
+    self.cursor.execute(f""" select * from employees where country='{country}' """)
 
   #person
   def valid_username(self, username):

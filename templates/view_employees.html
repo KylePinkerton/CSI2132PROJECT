@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Total Employees Working for this Branch: {{ employees|length }}</h1>
+  {% for employee in employees %}
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+        <a class="ml" href="{{ url_for('user_profile', username=employee['username']) }}"> 
+            <h3 align='center'>{{ employee['username'] }}</a></h3>
+          </a> 
+          <div>
+            <h4 align='center'> Employee Info </h4>
+            <li class="list-group-item">Country: {{ employee['country'] }}</li>
+            <li class="list-group-item">Title: {{ employee['title'] }}</li>
+            <li class="list-group-item">Salary: {{ employee['salary'] }}</li>
+            <li class="list-group-item">Manager: {{ employee['managerusername'] }}</li>
+          </div>
+        </div>
+        <h1 align='center'> Total assigned properties: {{ employee['assigned_properties']|length }}</h1>
+      {% for property in employee['assigned_properties'] %}
+            <div>
+              <a href="{{ url_for('individual_property', propertyname=employee['assigned_properties']['propertyname']) }}">
+                <h3 align='center'>{{ employee['assigned_properties']['propertyname'] }}</h3>
+              </a> 
+              <div>
+                <h4 align='center'> Address Information </h4>
+                <li class="list-group-item">Country: {{ employee['assigned_properties']['country'] }}</li>
+                <li class="list-group-item">Province: {{ employee['assigned_properties']['province'] }}</li>
+                <li class="list-group-item">Street Number: {{ employee['assigned_properties']['street_number'] }}</li>
+                <li class="list-group-item">Street Name: {{ employee['assigned_properties']['street_name'] }}</li>
+                <li class="list-group-item">Apartment Number: {{ employee['assigned_properties']['apt_number'] }}</li>
+                <li class="list-group-item">Postal Code: {{ employee['assigned_properties']['postal_code'] }}</li>
+              </div>
+            </div>
+      {% endfor %}
+      </article> 
+  {% endfor %}
+{% endblock content %}

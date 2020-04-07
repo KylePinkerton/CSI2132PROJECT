@@ -99,6 +99,9 @@ def user_loader(username):
       #check what kind of employee
       db.get_title(username)
       user.title = db.fetch_one()[0]
+      #get manager
+      db.get_manager(username)
+      user.manager = db.fetch_one()[0]
     else:
       user.employee = False
     return user
@@ -682,6 +685,47 @@ def assigned_properties():
       property_map['country'] = assigned_property[5]
       assigned_properties.append(property_map)
     return render_template('assignedproperties.html', assigned_properties=assigned_properties)
+  else:
+    abort(404)
+
+@app.route("/branchmanagerportal", methods=["GET", "POST"])
+@login_required
+def branchmanagerportal():
+  if (current_user.title == "Branch Manager"):
+    return render_template('branchmanagerportal.html')
+  else:
+    abort(404)
+
+@app.route("/viewemployees", methods=["GET", "POST"])
+@login_required
+def view_employees():
+  if (current_user.title == "Branch Manager"):
+    db.view_employees(current_user.country)
+    employees_query = db.fetch_all()
+    employees = []
+    for employee in employees_query:
+      employee_map = {}
+      employee_map['assigned_properties'] = {}
+      employee_map['username'] = employee[0]
+      employee_map['title'] = employee[1]
+      employee_map['salary'] = employee[2]
+      employee_map['country'] = employee[3]
+      employee_map['managerusername'] = employee[4]
+
+      db.get_assigned_properties(employee[0])
+      properties = db.fetch_all()
+      for assigned_property in properties:
+        employee_map['assigned_properties'] = {}
+        employee_map['assigned_properties']['propertyname'] = assigned_property[0]
+        employee_map['assigned_properties']['street_name'] = assigned_property[1]
+        employee_map['assigned_properties']['street_number'] = assigned_property[2]
+        employee_map['assigned_properties']['postal_code'] = assigned_property[3]
+        employee_map['assigned_properties']['province'] = assigned_property[4]
+        employee_map['assigned_properties']['country'] = assigned_property[5]
+      employees.append(employee_map)    
+    
+    
+    return render_template('view_employees.html', employees = employees)
   else:
     abort(404)
     

@@ -3,9 +3,16 @@
   <h1>Your Account: {{current_user.id}} </h1>
   {% if current_user.employee %}
     <h4>You are an employee of the branch operating in {{ current_user.country }}</h4>
+    {% if current_user.id == current_user.manager %}
+      <h4>You are the lead manager of this branch</h4>
+    {% else %}
+      <h4>Your direct manager is: 
+        <a class="ml" href="{{ url_for('user_profile', username=current_user.manager) }}"> {{ current_user.manager }}</a>
+      </h4>
+    {% endif %}
     {% if current_user.title == 'Branch Manager' %}
       <h4>You are a Branch Manager, go here to access the the Branch Manager Portal:
-        <a class="ml" href="{{ url_for('branchmanager') }}">Branch Manager Portal</a>
+        <a class="ml" href="{{ url_for('branchmanagerportal') }}">Branch Manager Portal</a>
       </h4>
     {% endif %}
     {% if current_user.title != "Admin" and current_user.title != "Master Admin" and current_user.title != "Branch Manager" %}
