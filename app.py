@@ -805,7 +805,9 @@ def assign_employee_to_property():
         
         if (current_user.country != employee_country):
           raise Exception("This employee is not part of your branch!")
-      
+        
+        db.assign_employee_to_property(assign_map['employeeusername'], assign_map['propertyname'])
+        db.commit()
 
         flash('Success! ' + assign_map['employeeusername'] + ' has been assigned to the property ' + assign_map['propertyname'], 'success')
         return render_template('assign_employee_to_property.html', form=form)
