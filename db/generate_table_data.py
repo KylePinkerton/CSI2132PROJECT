@@ -827,77 +827,151 @@ def create_alot(generation_size):
         random_int = random.randint(1,9)
         if random_int == 1:
           username = generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
 
         elif random_int == 2:
           username = fake.name() + generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
-
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
+          
         elif random_int == 3:
           username = fake.company() + str(random.randint(1, 999)) + fake.name()
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
 
         elif random_int == 4:
           username = generate_username()[0] + str(random.randint(1, 9999))
-          random_int = random.randint(1,2)
+          random_int = random.randint(1,3)
           if random_int == 1:
             username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
         
         elif random_int == 5:
           username = fake.name() + fake.name() + str(random.randint(1, 9999))
-          random_int = random.randint(1,2)
+          random_int = random.randint(1,3)
           if random_int == 1:
             username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
         
         elif random_int == 6:
           username = fake.word() + fake.word() + str(random.randint(1, 9999))
-          random_int = random.randint(1,2)
+          random_int = random.randint(1,3)
           if random_int == 1:
             username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
         
         elif random_int == 7:
           username = fake.word() + generate_username()[0] + str(random.randint(1, 9999))
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
         
         elif random_int == 8:
           username = fake.word() + fake.company() + random.choice(alphabet) + str(random.randint(1, 9999))
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
 
         else:
           username = fake.street_name() + fake.word() + str(random.randint(1, 9999))
+          random_int = random.randint(1,3)
+          if random_int == 1:
+            username += random.choice(alphabet)
+          elif random_int == 2:
+            username = leet(username)
 
         while len(username) > 20:
           random_int = random.randint(1,9)
           if random_int == 1:
             username = generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
 
           elif random_int == 2:
             username = fake.name() + generate_username()[0] + random.choice(alphabet) + str(random.randint(1, 999))
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
 
           elif random_int == 3:
             username = fake.company() + str(random.randint(1, 999)) + fake.name()
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
+
 
           elif random_int == 4:
             username = generate_username()[0] + str(random.randint(1, 9999))
-            random_int = random.randint(1,2)
+            random_int = random.randint(1,3)
             if random_int == 1:
               username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
           
           elif random_int == 5:
             username = fake.name() + fake.name() + str(random.randint(1, 9999))
-            random_int = random.randint(1,2)
+            random_int = random.randint(1,3)
             if random_int == 1:
               username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
           
           elif random_int == 6:
             username = fake.word() + fake.word() + str(random.randint(1, 9999))
-            random_int = random.randint(1,2)
+            random_int = random.randint(1,3)
             if random_int == 1:
               username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
           
           elif random_int == 7:
             username = fake.word() + generate_username()[0] + str(random.randint(1, 9999))
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
           
           elif random_int == 8:
             username = fake.word() + fake.company() + random.choice(alphabet) + str(random.randint(1, 9999))
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
 
           else:
             username = fake.street_name() + fake.word() + str(random.randint(1, 9999))
+            random_int = random.randint(1,3)
+            if random_int == 1:
+              username += random.choice(alphabet)
+            elif random_int == 2:
+              username = leet(username)
+
         
         username = username.replace(' ', '-')
         first_name = fake.first_name()
@@ -988,67 +1062,247 @@ def create_alot(generation_size):
             random_int = random.randint(1,15)
             if random_int == 1:
               propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 999)) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+              
             elif random_int == 2:
               propertyname =  str(random.randint(1, 999)) + random.choice(alphabet) + fake.company() + str(random.randint(1, 999)) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 3:
               propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 999))
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 4:
               propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 5:
               propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 999))
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 6:
               propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet) + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 7:
               propertyname = fake.company() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 8:
               propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.company() + fake.street_name()
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 9:
               propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 10:
               propertyname = fake.company() + str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 11:
               propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 12:
               propertyname = fake.first_name() + str(random.randint(1, 999)) + random.choice(alphabet) + random.choice(["Best", "Renovated ", "(new)", "*NEW*"])
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 13:
               propertyname = random.choice(["Best", "Renovated ", "(new)", "*NEW*"]) + fake.name() + str(random.randint(1, 999)) + random.choice(alphabet)
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             elif random_int == 14:
               propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + fake.name()
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
             else:
               propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + random.choice(alphabet) + str(random.randint(1, 999)) + fake.company()
+              random_int = random.randint(1,3)
+              if random_int == 1:
+                propertyname = leet(propertyname)
+              elif random_int == 2:
+                propertyname = leet(propertyname[:10] + fake.name())
+
 
             while len(propertyname) > 20:
               random_int = random.randint(1,15)
               if random_int == 1:
                 propertyname = fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + str(random.randint(1, 999)) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 2:
                 propertyname =  str(random.randint(1, 999)) + random.choice(alphabet) + fake.company() + str(random.randint(1, 999)) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 3:
                 propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.company() + str(random.randint(1, 999))
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 4:
                 propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!']) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 5:
                 propertyname = random.choice(alphabet) + random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + str(random.randint(1, 999))
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 6:
                 propertyname = str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet) + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 7:
                 propertyname = fake.company() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 8:
                 propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.company() + fake.street_name()
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 9:
                 propertyname = fake.street_name() + fake.street_name() + str(random.randint(1, 999)) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 10:
                 propertyname = fake.company() + str(random.randint(1, 999)) + fake.street_name() + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 11:
                 propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + random.choice(["!", "NEW", "new", "(new)", "", 'Getaway!'])
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 12:
                 propertyname = fake.first_name() + str(random.randint(1, 999)) + random.choice(alphabet) + random.choice(["Best", "Renovated ", "(new)", "*NEW*"])
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 13:
                 propertyname = random.choice(["Best", "Renovated ", "(new)", "*NEW*"]) + fake.name() + str(random.randint(1, 999)) + random.choice(alphabet)
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               elif random_int == 14:
                 propertyname = random.choice(alphabet) + str(random.randint(1, 999)) + fake.street_name() + fake.company() + fake.name()
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
               else:
                 propertyname = random.choice(["Stay With ", "The ", "(new)", "*NEW*"]) + fake.street_name() + random.choice(alphabet) + str(random.randint(1, 999)) + fake.company()
+                random_int = random.randint(1,3)
+                if random_int == 1:
+                  propertyname = leet(propertyname)
+                elif random_int == 2:
+                  propertyname = leet(propertyname[:10] + fake.name())
+
 
             propertyname = propertyname.replace(' ', '-')
             street_number = random.randint(1, 999)
@@ -1324,6 +1578,11 @@ def insert_conversations():
         receiverusername = db.fetch_one()[0]
         if receiverusername == senderusername:
           continue 
+        db.raw_query(f""" select * from conversation where senderusername='{senderusername}' and receiverusername='{receiverusername}' """)
+        already_exists = db.fetch_one()[0]
+        #if the convo already exists, skip it to prevent primary key clash
+        if already_exists != None:
+          continue
         db.raw_query(f""" INSERT INTO conversation (senderusername, receiverusername) VALUES ('{senderusername}', '{receiverusername}') """)
         time = fake.date_time_between_dates(datetime_start=join_date, datetime_end=datetime.datetime.utcnow(), tzinfo=None)
         message_content = fake.text(100)
