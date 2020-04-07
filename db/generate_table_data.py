@@ -1798,4 +1798,4 @@ def main():
       db.new_connection()
 
 if __name__ == "__main__":
-  insert_conversations()
+  main()

@@ -9,6 +9,7 @@ __pycache__/
 *.so
 #we dont want to add any more pngs to the repo other than default.png
 *.png
+*.jpg
 
 # Distribution / packaging
 .Python
