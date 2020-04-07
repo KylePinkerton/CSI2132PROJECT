@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Total Short-Term Unavailable Properties (unavailability in the next two days): {{ unavailable_properties|length }}</h1>
+  {% for property in unavailable_properties %}
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          <a href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">
+            <h3 align='center'>{{ property['propertyname'] }}</h3>
+          </a> 
+          <div>
+            <h4 align='center'> Address Information </h4>
+            <li class="list-group-item">Country: {{ property['country'] }}</li>
+            <li class="list-group-item">Province: {{ property['province'] }}</li>
+            <li class="list-group-item">Street Number: {{ property['street_number'] }}</li>
+            <li class="list-group-item">Street Name: {{ property['street_name'] }}</li>
+            <li class="list-group-item">Apartment Number: {{ property['apt_number'] }}</li>
+            <li class="list-group-item">Postal Code: {{ property['postal_code'] }}</li>
+          </div>
+        </div>
+      </article>
+  {% endfor %}
+{% endblock content %}

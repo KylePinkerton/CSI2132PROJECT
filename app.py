@@ -724,8 +724,53 @@ def view_employees():
         employee_map['assigned_properties']['country'] = assigned_property[5]
       employees.append(employee_map)    
     
-    
     return render_template('view_employees.html', employees = employees)
+  else:
+    abort(404)
+
+@app.route("/shorttermavailableproperties", methods=["GET", "POST"])
+@login_required
+def short_term_available_properties():
+  if (current_user.title == "Branch Manager"):
+    assigned_properties = []
+    db.get_short_term_available_properties(current_user.country)
+    properties = db.fetch_all()
+    available_properties = []
+    for available_property in properties:
+      property_map = {}
+      property_map['propertyname'] = available_property[0]
+      property_map['street_number'] = available_property[1]
+      property_map['street_name'] = available_property[2]
+      property_map['apt_number'] = available_property[3]
+      property_map['province'] = available_property[4]
+      property_map['postal_code'] = available_property[5]
+      property_map['country'] = available_property[13]
+      available_properties.append(property_map)
+    return render_template('short_term_available.html', available_properties=available_properties)
+
+  else:
+    abort(404)
+
+@app.route("/shorttermunavailableproperties", methods=["GET", "POST"])
+@login_required
+def short_term_unavailable_properties():
+  if (current_user.title == "Branch Manager"):
+    assigned_properties = []
+    db.get_short_term_unavailable_properties(current_user.country)
+    properties = db.fetch_all()
+    unavailable_properties = []
+    for unavailable_property in properties:
+      property_map = {}
+      property_map['propertyname'] = unavailable_property[0]
+      property_map['street_number'] = unavailable_property[1]
+      property_map['street_name'] = unavailable_property[2]
+      property_map['apt_number'] = unavailable_property[3]
+      property_map['province'] = unavailable_property[4]
+      property_map['postal_code'] = unavailable_property[5]
+      property_map['country'] = unavailable_property[13]
+      unavailable_properties.append(property_map)
+    return render_template('short_term_unavailable.html', unavailable_properties=unavailable_properties)
+
   else:
     abort(404)
     

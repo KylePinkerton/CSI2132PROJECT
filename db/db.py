@@ -1,7 +1,7 @@
 from dbconnection import new_connection
 import os
 import secrets
-from datetime import datetime
+import datetime
 
 #change these credentials to change db
 dbname = "kpink074"
@@ -114,7 +114,7 @@ class DB:
     self.cursor.execute(f"select country from person where username='{username}'")
 
   def create_user(self, first_name, middle_name, last_name, username, password, street_number, street_name, apt_number, postal_code, date_of_birth, country, province, email, phone_number):
-    join_date = datetime.today().strftime('%Y-%m-%d')
+    join_date = datetime.datetime.today().strftime('%Y-%m-%d')
     self.cursor.execute(f"""INSERT INTO person (username, first_name, middle_name, last_name, password, street_number, street_name, apt_number,
                          postal_code, date_of_birth, country, province) VALUES ('{username}', '{first_name}', '{middle_name}', '{last_name}', '{password}', '{street_number}', '{street_name}', '{apt_number}',
                          '{postal_code}', '{date_of_birth}', '{country}', '{province}')""")
@@ -182,6 +182,28 @@ class DB:
       self.cursor.execute(f"""select * from property where hostusername={hostusername} and propertyname={propertyname} and rent_rate<={rent_rate} and country={country} and province={province} 
       and property_type={property_type} and max_guests>={max_guests} and number_beds>={number_beds} and number_baths>={number_baths} and accessible={accessible} and pets_allowed={pets_allowed} limit 20""")
 
+  def get_short_term_available_properties(self, country):
+    join_date = datetime.datetime.today()
+    tomorrow = join_date + datetime.timedelta(days=1)
+    next_day = join_date + datetime.timedelta(days=1)
+    join_date = join_date.strftime('%Y-%m-%d')
+    tomorrow = tomorrow.strftime('%Y-%m-%d')
+    next_day = next_day.strftime('%Y-%m-%d')
+    self.cursor.execute(f""" select * from property as P where not exists(select * from property_taken_dates as PT where PT.propertyname=P.propertyname and
+                        (PT.taken_date='{join_date}' or PT.taken_date='{tomorrow}' or
+                        PT.taken_date='{next_day}')) and P.country='{country}'  """)
+
+  def get_short_term_unavailable_properties(self, country):
+    join_date = datetime.datetime.today()
+    tomorrow = join_date + datetime.timedelta(days=1)
+    next_day = join_date + datetime.timedelta(days=1)
+    join_date = join_date.strftime('%Y-%m-%d')
+    tomorrow = tomorrow.strftime('%Y-%m-%d')
+    next_day = next_day.strftime('%Y-%m-%d')
+    self.cursor.execute(f""" select * from property as P where exists(select * from property_taken_dates as PT where PT.propertyname=P.propertyname and
+                        (PT.taken_date='{join_date}' or PT.taken_date='{tomorrow}' or
+                        PT.taken_date='{next_day}')) and P.country='{country}'  """)
+
   #payment_method
   def get_users_payment_methods(self, username):
       self.cursor.execute(f"select * from payment_method where username='{username}'")
@@ -215,7 +237,7 @@ class DB:
 
   #rental_agreement
   def get_total_completed_stays(self):
-    current_date = datetime.today().strftime('%Y-%m-%d')
+    current_date = datetime.datetime.today().strftime('%Y-%m-%d')
     self.cursor.execute(f"select count(rental_id) from rental_agreement where host_accepted='true' and end_date<='{current_date}'")
 
   #branches
