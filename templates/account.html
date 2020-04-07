@@ -3,7 +3,7 @@
   <h1>Your Account: {{current_user.id}} </h1>
   {% if current_user.employee %}
     <h4>You are an employee of the branch operating in {{ current_user.country }}</h4>
-    {% if current_user.id == current_user.manager %}
+    {% if current_user.id == current_user.manager and current_user.id != 'admin' %}
       <h4>You are the lead manager of this branch</h4>
     {% else %}
       <h4>Your direct manager is: 
