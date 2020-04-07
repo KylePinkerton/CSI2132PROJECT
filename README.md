@@ -27,13 +27,3 @@ AirBnB clone for our CSI2132 Winter 2020 Project.
 
 ## ER Diagram
 <img src="./docs/ERDiagram.png"/>
-
-## TODO:
-- employee directory stuff
-- The operations would be management related (issuing bills and rental agreements for clients, cleaning of properties, assigning teams to that, etc.). The branch employees need to know when clients are getting in and out.
-- Hosts need to upload their listings and guests need to check availability and rates.
-
-- For instance a guest could check which properties are available for a certain day and their rate for several branches. The information on booked properties may not be interesting for a guest...
-- A branch employee can check, for his branch, the properties available and booked for the two next days to prepare cleaning, rental agreements, payments, etc...
-
-- You can add other details that you think would make sense in your application.
