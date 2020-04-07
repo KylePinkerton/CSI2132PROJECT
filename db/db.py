@@ -73,6 +73,9 @@ class DB:
   def get_title(self, username):
     self.cursor.execute(f" select title from employees where username='{username}' ")
 
+  def get_assigned_properties(self, username):
+    self.cursor.execute(f""" select P.propertyname, P.street_name, P.street_number, P.postal_code, P.province, P.country from works_at as W, property as P where W.propertyname=P.propertyname and W.employeeusername='{username}' """)
+
   #person
   def valid_username(self, username):
     self.cursor.execute(f"select count(username) from person where username='{username}'")

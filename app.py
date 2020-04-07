@@ -96,6 +96,9 @@ def user_loader(username):
     employee_count = db.fetch_one()
     if employee_count[0]:
       user.employee = True
+      #check what kind of employee
+      db.get_title(username)
+      user.title = db.fetch_one()[0]
     else:
       user.employee = False
     return user
@@ -662,5 +665,25 @@ def admin():
   else:
     abort(404)
 
+@app.route("/assignedproperties", methods=["GET", "POST"])
+@login_required
+def assigned_properties():
+  if (current_user.title != "Admin" and current_user.title != "Master Admin" and current_user.title != "Branch Manager"):
+    assigned_properties = []
+    db.get_assigned_properties(current_user.id)
+    properties = db.fetch_all()
+    for assigned_property in properties:
+      property_map = {}
+      property_map['propertyname'] = assigned_property[0]
+      property_map['street_name'] = assigned_property[1]
+      property_map['street_number'] = assigned_property[2]
+      property_map['postal_code'] = assigned_property[3]
+      property_map['province'] = assigned_property[4]
+      property_map['country'] = assigned_property[5]
+      assigned_properties.append(property_map)
+    return render_template('assignedproperties.html', assigned_properties=assigned_properties)
+  else:
+    abort(404)
+    
 if __name__ == "__main__":
   app.run()
