@@ -339,7 +339,7 @@ CREATE TABLE project.users
     CONSTRAINT users_pkey PRIMARY KEY (username),
     CONSTRAINT users_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -373,7 +373,7 @@ def create_property():
         ON DELETE CASCADE,
     CONSTRAINT property_hostusername_fkey FOREIGN KEY (hostusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT property_rent_rate_check CHECK (rent_rate > 0::numeric),
     CONSTRAINT property_type_check CHECK (property_type::text = 'entire'::text OR property_type::text = 'private'::text OR property_type::text = 'shared'::text),
@@ -393,7 +393,7 @@ def create_property_taken_dates():
     CONSTRAINT property_taken_dates_pkey PRIMARY KEY (propertyname, taken_date),
     CONSTRAINT property_taken_dates_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -408,11 +408,11 @@ def create_property_review():
     CONSTRAINT property_review_pkey PRIMARY KEY (username, propertyname),
     CONSTRAINT property_review_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT property_review_username_fkey FOREIGN KEY (username)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 ) 
   """)
@@ -436,7 +436,7 @@ def create_property_review_details():
     CONSTRAINT property_review_details_pkey PRIMARY KEY (username, propertyname, "time"),
     CONSTRAINT property_review_details_username_fkey FOREIGN KEY (propertyname, username)
         REFERENCES project.property_review (propertyname, username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT property_review_details_communication_check CHECK (communication >= 0::numeric AND communication <= 5::numeric),
     CONSTRAINT property_review_details_value_check CHECK (value >= 0::numeric AND value <= 5::numeric),
@@ -467,15 +467,15 @@ def create_rental_agreement():
     CONSTRAINT rental_agreement_pkey PRIMARY KEY (rental_id),
     CONSTRAINT rental_agreement_guestusername_fkey FOREIGN KEY (guestusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT rental_agreement_hostusername_fkey FOREIGN KEY (hostusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT rental_agreement_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT rental_agreement_total_price_check CHECK (total_price > 0::numeric)
 )
@@ -498,11 +498,11 @@ CREATE TABLE project.employees
         ON DELETE CASCADE,
     CONSTRAINT employees_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT employees_managerusername_fkey FOREIGN KEY (managerusername)
         REFERENCES project.employees (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT employees_salary_check CHECK (salary > 0::numeric)
 )
@@ -517,11 +517,11 @@ def create_admins():
     CONSTRAINT admins_pkey PRIMARY KEY (username),
     CONSTRAINT admins_username2_fkey FOREIGN KEY (username)
         REFERENCES project.employees (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT admins_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -536,11 +536,11 @@ def create_works_at():
     CONSTRAINT works_at_pkey PRIMARY KEY (employeeusername, propertyname),
     CONSTRAINT works_at_employeeusername_fkey FOREIGN KEY (employeeusername)
         REFERENCES project.employees (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT works_at_propertyname_fkey FOREIGN KEY (propertyname)
         REFERENCES project.property (propertyname) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -556,11 +556,11 @@ def create_conversation():
     CONSTRAINT conversation_pkey PRIMARY KEY (senderusername, receiverusername),
     CONSTRAINT conversation_receiverusername_fkey FOREIGN KEY (receiverusername)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT conversation_senderusername_fkey FOREIGN KEY (senderusername)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -578,7 +578,7 @@ CREATE TABLE project.conversation_messages
     CONSTRAINT conversation_messages_pkey PRIMARY KEY (senderusername, receiverusername, "time"),
     CONSTRAINT conversation_messages_senderusername_fkey FOREIGN KEY (receiverusername, senderusername)
         REFERENCES project.conversation (receiverusername, senderusername) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -590,7 +590,7 @@ def create_payment():
 (
     payment_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     is_deposit boolean NOT NULL,
-    amount numeric(8,2),
+    amount numeric(8,2) NOT NULL,
     status character varying(20) COLLATE pg_catalog."default" NOT NULL,
     rental_id character varying(20) COLLATE pg_catalog."default" NOT NULL,
     guestusername character varying(20) COLLATE pg_catalog."default" NOT NULL,
@@ -598,15 +598,15 @@ def create_payment():
     CONSTRAINT payment_pkey PRIMARY KEY (payment_id),
     CONSTRAINT payment_guestusername_fkey FOREIGN KEY (guestusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT payment_hostusername_fkey FOREIGN KEY (hostusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id)
         REFERENCES project.rental_agreement (rental_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE SET NULL,
     CONSTRAINT payment_amount_check CHECK (amount > 0::numeric),
     CONSTRAINT payment_status_check CHECK (status::text = 'approved'::text OR status::text = 'pending'::text)
@@ -629,7 +629,7 @@ def create_payment_method():
     CONSTRAINT payment_method_pkey PRIMARY KEY (username),
     CONSTRAINT payment_method_username_fkey FOREIGN KEY (username)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT payment_method_billing_country_fkey FOREIGN KEY (billing_country)
         REFERENCES project.branches (country) MATCH SIMPLE
@@ -649,7 +649,7 @@ def create_payout_method():
     CONSTRAINT payout_method_pkey PRIMARY KEY (username),
     CONSTRAINT payout_method_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -665,7 +665,7 @@ def create_person_email_address():
     CONSTRAINT person_email_address_pkey PRIMARY KEY (username, email_address),
     CONSTRAINT person_email_address_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -680,7 +680,7 @@ def create_person_phone_number():
     CONSTRAINT person_phone_number_pkey PRIMARY KEY (username, phone_number),
     CONSTRAINT person_phone_number_username_fkey FOREIGN KEY (username)
         REFERENCES project.person (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
   """)
@@ -695,11 +695,11 @@ def create_user_review():
     CONSTRAINT user_review_pkey PRIMARY KEY (reviewerusername, revieweeusername),
     CONSTRAINT user_review_revieweeusername_fkey FOREIGN KEY (revieweeusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT user_review_reviewerusername_fkey FOREIGN KEY (reviewerusername)
         REFERENCES project.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT user_review_check CHECK (revieweeusername::text <> reviewerusername::text)
 )
@@ -717,7 +717,7 @@ CREATE TABLE project.user_review_details
     CONSTRAINT user_review_details_pkey PRIMARY KEY (reviewerusername, revieweeusername, "time"),
     CONSTRAINT user_review_details_reviewerusername_fkey FOREIGN KEY (revieweeusername, reviewerusername)
         REFERENCES project.user_review (revieweeusername, reviewerusername) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT user_review_details_check CHECK (revieweeusername::text <> reviewerusername::text)
 )
@@ -786,8 +786,6 @@ def create_alot(generation_size):
     generation_size = 10
   elif generation_size == 'large':
     generation_size = 25
-  elif generation_size == 'massive':
-    generation_size = 50
     
   try:
     #making person
@@ -1763,7 +1761,7 @@ def create_admin():
 def main(): 
   try:
     generation_size = sys.argv[1].lower()
-    if generation_size not in ['small', 'medium', 'large', 'massive']:
+    if generation_size not in ['small', 'medium', 'large']:
       if generation_size == 'reset':
         reset()
         print("Reset successful, ready for data to be generated.")
