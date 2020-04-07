@@ -82,6 +82,12 @@ class DB:
   def view_employees(self, country):
     self.cursor.execute(f""" select * from employees where country='{country}' """)
 
+  def assign_employee_to_property(self, employeeusername, propertyname):
+    self.cursor.execute(f""" insert into works_at (employeeusername, propertyname) values ('{employeeusername}', '{propertyname}')  """)
+
+  def get_employee_country(self, employeeusername):
+    self.cursor.execute(f""" select country from employees where username='{employeeusername}'  """)
+
   #person
   def valid_username(self, username):
     self.cursor.execute(f"select count(username) from person where username='{username}'")
@@ -162,6 +168,9 @@ class DB:
   #property
   def get_homepage_properties(self):
       self.cursor.execute(f"select * from property order by random() limit 20")
+  
+  def get_property_country(self, propertyname):
+    self.cursor.execute(f""" select country from property where propertyname='{propertyname}' """)
 
   def get_total_properties(self):
     self.cursor.execute(f"select count(propertyname) from property where propertyname=propertyname")

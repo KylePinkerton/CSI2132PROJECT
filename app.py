@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 sys.path.insert(1, './db')
 from db import db
-from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates, SearchProperty, Admin
+from forms import RegistrationForm, LoginForm, AccountPicture, ChangeNumber, GetVerified, UpdateAbout, UpdateLanguages, UpdateWork, CreateProperty, PaymentMethod, PayoutMethod, AvailableDates, SearchProperty, Admin, AssignEmployeeToProperty
 from flask_login import LoginManager, login_required, current_user, logout_user 
 from flask_login import UserMixin, login_user
 import secrets
@@ -773,6 +773,54 @@ def short_term_unavailable_properties():
 
   else:
     abort(404)
+
+@app.route("/assignemployee", methods=["GET", "POST"])
+@login_required
+def assign_employee_to_property():
+  try:
+    if (current_user.title == "Branch Manager"):
+      assign_map = {}
+      form = AssignEmployeeToProperty()
+      if form.validate_on_submit():
+        assign_map['employeeusername'] = request.form.get('employeeusername')
+        assign_map['propertyname'] = request.form.get('propertyname')
+        #ensure employee and property are from this branch manager's branch (country)
+        db.get_property_country(assign_map['propertyname'])
+        property_country = db.fetch_one()
+        db.get_employee_country(assign_map['employeeusername'])
+        employee_country = db.fetch_one()
+
+        if employee_country == None:
+          raise Exception("This user is not an employee!")
+        
+        if property_country == None:
+          raise Exception("This property is not part of your branch")
+
+        property_country = property_country[0]
+        employee_country = employee_country[0]
+
+        if (current_user.country != property_country):
+          raise Exception("This property is not part of your branch!")
+        
+        if (current_user.country != employee_country):
+          raise Exception("This employee is not part of your branch!")
+      
+
+        flash('Success! ' + assign_map['employeeusername'] + ' has been assigned to the property ' + assign_map['propertyname'], 'success')
+        return render_template('assign_employee_to_property.html', form=form)
+
+    else:
+      abort(404)
+
+  except Exception as e:
+    db.close()
+    db.new_connection()
+    print(e)
+    flash('Error: ' + str(e), 'danger')
+    return render_template('assign_employee_to_property.html', form=form)
+  
+  return render_template('assign_employee_to_property.html', form=form)
+    
     
 if __name__ == "__main__":
   app.run()

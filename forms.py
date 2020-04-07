@@ -175,3 +175,24 @@ class SearchProperty(FlaskForm):
 class Admin(FlaskForm):
   query = TextAreaField('Enter Your Query: ', validators=[DataRequired()])
   submit = SubmitField('Perform query')
+
+class AssignEmployeeToProperty(FlaskForm):
+  employeeusername = StringField('Employee Username', validators=[DataRequired()])
+  propertyname = StringField('Property Name', validators=[DataRequired()])
+  submit = SubmitField('Assign Employee to Property')
+
+  def validate_branch_propertyname(self, propertyname):
+    db.valid_propertyname(propertyname.data)
+    propertyname_count = db.fetch_one()
+    if not propertyname_count[0]:
+      raise ValidationError("That property does not exist, please choose another.")
+    if " " in list(property_name.data):
+      raise ValidationError("No whitespace in property names.")
+  
+  def validate_employeeusername(self, employeeusername):
+    db.valid_username(employeeusername.data)
+    employeeusername_count = db.fetch_one()
+    if not employeeusername_count[0]:
+      raise ValidationError("That employeeusername does not exist.")
+    if " " in list(employeeusername.data):
+      raise ValidationError("No whitespace in employeeusernames.")
