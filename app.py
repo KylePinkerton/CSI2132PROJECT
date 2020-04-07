@@ -23,7 +23,7 @@ def inject_stats():
   total_countrys = db.fetch_one()[0]
   return dict(total_users=total_users, total_properties=total_properties, total_completed_stays=total_completed_stays, total_countrys=total_countrys)
 
-app.debug = True
+#app.debug = True
 app.config['SECRET_KEY'] = 'f7db6a2ebd1d01417597c005cb404b63'
 login_manager = LoginManager(app)
 login_manager.login_view = 'log_in'
@@ -705,7 +705,7 @@ def view_employees():
     employees = []
     for employee in employees_query:
       employee_map = {}
-      employee_map['assigned_properties'] = {}
+      employee_map['assigned_properties']= []
       employee_map['username'] = employee[0]
       employee_map['title'] = employee[1]
       employee_map['salary'] = employee[2]
@@ -715,13 +715,14 @@ def view_employees():
       db.get_assigned_properties(employee[0])
       properties = db.fetch_all()
       for assigned_property in properties:
-        employee_map['assigned_properties'] = {}
-        employee_map['assigned_properties']['propertyname'] = assigned_property[0]
-        employee_map['assigned_properties']['street_name'] = assigned_property[1]
-        employee_map['assigned_properties']['street_number'] = assigned_property[2]
-        employee_map['assigned_properties']['postal_code'] = assigned_property[3]
-        employee_map['assigned_properties']['province'] = assigned_property[4]
-        employee_map['assigned_properties']['country'] = assigned_property[5]
+        property_map = {}
+        property_map['propertyname'] = assigned_property[0]
+        property_map['street_name'] = assigned_property[1]
+        property_map['street_number'] = assigned_property[2]
+        property_map['postal_code'] = assigned_property[3]
+        property_map['province'] = assigned_property[4]
+        property_map['country'] = assigned_property[5]
+        employee_map['assigned_properties'].append(property_map)
       employees.append(employee_map)    
     
     return render_template('view_employees.html', employees = employees)
