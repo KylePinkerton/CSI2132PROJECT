@@ -19,7 +19,7 @@
         <h1 align='center'> Total assigned properties: {{ employee['assigned_properties']|length }}</h1>
       {% for property in employee['assigned_properties'] %}
             <div>
-              <a href="{{ url_for('individual_property', propertyname=employee['assigned_properties']['propertyname']) }}">
+              <a href="{{ url_for('individual_property', propertyname=property['propertyname']) }}">
                 <h3 align='center'>{{ property['propertyname'] }}</h3>
               </a> 
               <div>
