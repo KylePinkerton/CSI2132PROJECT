@@ -4,19 +4,21 @@ AirBnB clone for our CSI2132 Winter 2020 Project.
 
 # How to Get the Project Running 
 1. pip install -r requirements.txt (PYTHON 3)
-2. go to `db.py` file in the `db` directory, at the top you will see you will see the variables: 
+2. Go to the `db.py` file in the `db` directory, at the top you will see you will see the following: 
 - `dbname = "kpink074"` 
 - `user = "kpink074"`
 - `password = os.environ.get("UOTTAWA_PW")`
 - `host = "web0.site.uottawa.ca"` 
 - `port = "15432"` 
 - `schema = "project"` 
-- Enter your relevant information to the above in order to connect to your specific POSTGRESQL db instance
-2. run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (this process takes some time - see specific instructions for this setup script below).
+
+Enter your relevant information to the above in order to connect to your specific POSTGRESQL db instance
+
+3. Run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (this process takes some time - see specific instructions for this setup script below).
 
 #### OR 
-3. As an alternative to generating your own own data using `generate_table_data.py`, you can instead restore your database using the backup files `defaultdata.backup` and `defaultdata.sql` located in the `db/backups` directory (for more information on how to do this visit https://www.postgresql.org/docs/9.1/backup-dump.html). This data was generated using `generate_table_data.py large`. A caveat to using this approach to populate your database is the fact that during the generation of data user/property pictures are saved to `static/images` in order to be served in the application. This means that your application will not have generated pictures.
-3. Run the app `python3 app.py` and then go to `127.0.0.1:5000/`, you will be on the homepage of the app and ready to go!
+4. As an alternative to generating your own own data using `generate_table_data.py`, you can instead restore your database using the backup files `defaultdata.backup` and `defaultdata.sql` located in the `db/backups` directory (for more information on how to do this visit https://www.postgresql.org/docs/9.1/backup-dump.html). This data was generated using `generate_table_data.py large`. A caveat to using this approach to populate your database is the fact that during the generation of data user/property pictures are saved to `static/images` in order to be served in the application. This means that your application will not have generated pictures.
+5. Run the app `python3 app.py` and then go to `127.0.0.1:5000/`, you will be on the homepage of the app and ready to go!
 
 ## Running `generate_table_data.py`, the database setup/data-generation script
 - When running `python 3 generate_table_data.py` a "medium" dataset will be generated as default, however several command-line arguments can be passed to alter how much data will be generated:
