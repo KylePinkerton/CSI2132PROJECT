@@ -13,7 +13,7 @@ AirBnB clone for our CSI2132 Winter 2020 Project.
 - `port = "15432"` 
 - `schema = "project"` 
 
-Enter your relevant information to the above in order to connect to your specific POSTGRESQL db instance
+Enter your relevant information to the above in order to connect to your specific POSTGRESQL database instance.
 
 3. Run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (this process takes some time - see specific instructions for this setup script below).
 
@@ -26,7 +26,7 @@ Enter your relevant information to the above in order to connect to your specifi
 1. `python 3 generate_table_data.py small` - a small amount of data will be generated - ~250 mb of free space required
 2. `python 3 generate_table_data.py medium`- (DEFAULT - RECOMMENDED) a significant amount of data (enough to fully experience the project) will be generated - ~550 mb of free space required
 3. `python 3 generate_table_data.py large` - a large amount amount of data will be generated - ~2.5 gb of free space required
-- If an error occurs during data generation, use `python 3 generate_table_data.py reset` to reset the schema, and then run the script again (if the script "hangs" when using `reset` (e.g. makes no progress), there is most likely issues regarding corrupt cursors in postgresql... try again in a couple minutes or manually the fix cursors using your DBMS interface (e.g. pgadmin4 dashboard))
+- If an error occurs during data generation, use `python 3 generate_table_data.py reset` to reset the schema, and then run the script again (if the script "hangs" when using `reset` (e.g. makes no progress), there is most likely issues regarding corrupt cursors in postgresql... try again in a couple minutes or manually the fix cursors using your DBMS interface (e.g. pgadmin4 dashboard).
 
 ## ER Diagram
 <img src="./docs/ERDiagram.png"/>
