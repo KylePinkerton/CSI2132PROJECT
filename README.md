@@ -20,9 +20,9 @@ AirBnB clone for our CSI2132 Winter 2020 Project.
 
 ## Running `generate_table_data.py`, the setup/data-generation script
 - When running `python 3 generate_table_data.py` a "medium" dataset will be generated as default, however several command-line arguments can be passed to alter how much data will be generated:
-1. `python 3 generate_table_data.py small` - a relatively small amount of generated data ~250 mb of free space required
-2. `python 3 generate_table_data.py medium`- (DEFAULT - RECOMMENDED) a relatively larger amount amount of generated data compared to `small` ~550 mb of free space required
-3. `python 3 generate_table_data.py large` - a relatively larger amount amount of generated data compared to `medium` ~2.5 gb of free space required
+1. `python 3 generate_table_data.py small` - a small amount of data will be generated - ~250 mb of free space required
+2. `python 3 generate_table_data.py medium`- (DEFAULT - RECOMMENDED) a significant amount of data (enough to fully experience the project) will be generated - ~550 mb of free space required
+3. `python 3 generate_table_data.py large` - a large amount amount of data will be generated - ~2.5 gb of free space required
 - If an error occurs during data generation, use `python 3 generate_table_data.py reset` to reset the schema, and then run the script again (if the script "hangs" when using `reset` (e.g. makes no progress), there is most likely issues regarding corrupt cursors in postgresql... try again in a couple minutes or manually the fix cursors using your DBMS interface (e.g. pgadmin4 dashboard))
 
 ## ER Diagram
