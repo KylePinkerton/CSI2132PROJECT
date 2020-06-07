@@ -1,5 +1,6 @@
 # CSI2132 PROJECT - AirBnB 
-Authors: Kyle Pinkerton (8122569) David Hew-wing (300013907)
+Authors: Kyle Pinkerton (8122569), David Hew-wing (300013907)
+
 AirBnB clone for our CSI2132 Winter 2020 Project.
 
 # How to Get the Project Running 
