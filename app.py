@@ -24,7 +24,7 @@ def inject_stats():
   return dict(total_users=total_users, total_properties=total_properties, total_completed_stays=total_completed_stays, total_countrys=total_countrys)
 
 #app.debug = True
-app.config['SECRET_KEY'] = 'f7db6a2ebd1d01417597c005cb404b63'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_FLASK_KEY")
 login_manager = LoginManager(app)
 login_manager.login_view = 'log_in'
 login_manager.login_message_category = 'info'
