@@ -11,7 +11,7 @@ The following is a video overview of the project: https://www.youtube.com/watch?
 ## STEPS
 1. pip install -r requirements.txt (PYTHON 3)
 
-2. go to `db.py` file in the `db` directory, at the top you will see you will see the variables:
+2. go to the `db.py` file in the `db` directory, at the top you will see the following:
 ```
 dbname = "kpink074"
 user = "kpink074"
