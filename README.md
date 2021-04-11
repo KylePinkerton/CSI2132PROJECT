@@ -23,9 +23,7 @@ schema = "project"
 
 Enter your relevant information to the above parameters in order to connect to your specific database instance.
 
-3. run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (generating the data takes some time, i.e. this isn't a "fast" process - see specific instructions for this setup script below).
-
-### OR
+3. run `python3 generate_table_data.py` in the `db` directory to automatically create all tables and fill them with generated data (generating the data takes some time... see specific instructions for this setup script below).
 
 4. As an alternative to Step 3 (generating your own own data using `generate_table_data.py`), you can instead restore your database using the backup files `defaultdata.backup` and `defaultdata.sql` located in the `db/backups` directory (for more information on how to do this visit https://www.postgresql.org/docs/9.1/backup-dump.html). This data was generated using `generate_table_data.py large`. A caveat to using this approach to populate your database is the fact that during the generation of data user/property pictures are saved to `static/images` in order to be served in the application. This means that your application will not have generated pictures. The benefit of this approach is that you will not have to wait for data to be generated using the data generation script.
 
@@ -33,11 +31,11 @@ Enter your relevant information to the above parameters in order to connect to y
 
 ## Running `generate_table_data.py`, the setup/data-generation script
 When running `python 3 generate_table_data.py` a "medium" dataset will be generated as default, however several command-line arguments can be passed to alter how much data will be generated:
-1. `python 3 generate_table_data.py small` - a relatively small amount of generated data ~250 mb of free space required
-2. `python 3 generate_table_data.py medium`- (DEFAULT - RECOMMENDED) a relatively larger amount amount of generated data compared to `small` ~550 mb of free space required
-3. `python 3 generate_table_data.py large` - a relatively larger amount amount of generated data compared to `medium` ~2.5 gb of free space required
+1. `python3 generate_table_data.py small` - a relatively small amount of generated data ~250 mb of free space required
+2. `python3 generate_table_data.py medium`- (DEFAULT - RECOMMENDED) a relatively larger amount amount of generated data compared to `small` ~550 mb of free space required
+3. `python3 generate_table_data.py large` - a relatively larger amount amount of generated data compared to `medium` ~2.5 gb of free space required
 
-If an error occurs during data generation, use `python 3 generate_table_data.py reset` to reset the schema, and then run the script again (if the script "hangs" when using `reset` (e.g. makes no progress), there is most likely issues regarding corrupt cursors in postgresql... try again in a couple minutes or manually the fix cursors using your DBMS interface (e.g. pgadmin4 dashboard))
+If an error occurs during data generation, use `python3 generate_table_data.py reset` to reset the schema, and then run the script again (if the script "hangs" when using `reset` (i.e. makes no progress), there is most likely issues regarding corrupt cursors in postgresql... try again in a couple minutes or manually the fix cursors using your DBMS interface).
 
 ## Entity Relationship (ER) Diagram
 <img src="./docs/ERDiagram.png"/>
